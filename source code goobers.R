@@ -5,9 +5,9 @@
 # Ong Zi Yang TP065229
 # Objective : To investigate the behaviour between credit score and monthly inhand salary
 
-#Analysis 1 : 
+#Analysis 1 : Is there a correlation between a person's credit score as well as their monthly in-hand salary?
 
-#Analysis 2 :
+#Analysis 2 : 
 
 #Analysis 3 :
 
