@@ -1,5 +1,5 @@
 # PFDA Group Assignment
-# To determine the correlation between a person's credit score and other factors, such as monthly in-hand salaries, number of credit cards,
+# To determine the correlation between a person's credit score and other factors, such as annual income, number of credit cards,
 # number of bank accounts, as well as the percentile of interest rate.
 
 
@@ -8,12 +8,24 @@
 
 # Libraries and Packages
 
-install.packages("ggplot2")
+# un-comment install lines on first load and re-comment ( !! IMPORTANT READ !! )
+
+# install.packages("ggplot2")
 library(ggplot2)
-install.packages("dplyr")
+# install.packages("dplyr")
 library(dplyr)
-install.packages("stringr")
+# install.packages("stringr")
 library(stringr)
+
+#=============================================
+
+
+
+#=============================================
+# Importing Dataset
+
+property_dataset <- read.csv("D:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv") # ( !! edit based off your dataset location !! )
+property_dataset
 
 #=============================================
 
@@ -70,9 +82,9 @@ library(stringr)
 #=============================================
 
 # Ong Zi Yang TP065229
-# Objective : To investigate the behaviour between credit score and monthly inhand salary
+# Objective : To investigate the behaviour between credit score and annual income
 
-#Analysis 1 : Is there a correlation between a person's credit score as well as their monthly in-hand salary?
+#Analysis 1 : Is there a correlation between a person's credit score as well as their annual income?
 
 #Analysis 2 : 
 
