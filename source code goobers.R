@@ -74,11 +74,11 @@ property_dataset
 
 #Analysis 1 : Is there a correlation between a person's credit score as well as their annual income?
 
-#Analysis 2 : 
+#Analysis 2 : Does the occupation of an individual affect their annual income?
 
-#Analysis 3 :
+#Analysis 3 : Is there a correlation between an individual's payment behaviour and their credit score?
 
-#Analysis 4 :
+#Analysis 4 : Does an individual's credit utilization ratio have an effect on their credit score?
 
 
 #=============================================
