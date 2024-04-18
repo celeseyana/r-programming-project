@@ -8,7 +8,7 @@
 
 # Libraries and Packages
 
-# un-comment install lines on first load and re-comment ( !! IMPORTANT READ !! )
+# un-comment install lines on first load, run and re-comment ( !! IMPORTANT READ !! )
 
 # install.packages("ggplot2")
 library(ggplot2)
@@ -33,19 +33,7 @@ property_dataset
 
 #=============================================
 
-# Preparing the Data for Analysis
-
-
-
-
-
-#=============================================
-
-
-
-#=============================================
-
-# Cleaning the Data to ensure Data Consistency
+# Data Cleaning
 
 
 
