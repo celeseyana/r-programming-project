@@ -46,10 +46,6 @@ property_dataset <- property_dataset %>%
   distinct()
 property_dataset
 
-# removing rows with empty values (NA)
-property_dataset <- property_dataset[complete.cases(property_dataset), ]
-property_dataset
-
 # removing rows with invalid values
 
 
