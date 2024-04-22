@@ -27,7 +27,10 @@ library(readr)
 #=============================================
 # Importing Dataset
 
-property_dataset <- read.csv("C:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv") # ( !! edit based off your dataset location !! )
+property_dataset <- read.csv("D:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
+for (col in names(property_dataset)) {
+  property_dataset[property_dataset == ""] <- NA
+}
 property_dataset
 
 #=============================================
@@ -38,7 +41,16 @@ property_dataset
 
 # Data Cleaning
 
+# duplicate row checking
+property_dataset <- property_dataset %>%
+  distinct()
+property_dataset
 
+# removing rows with empty values (NA)
+property_dataset <- property_dataset[complete.cases(property_dataset), ]
+property_dataset
+
+# removing rows with invalid values
 
 
 
