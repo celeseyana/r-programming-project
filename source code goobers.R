@@ -27,7 +27,7 @@ library(readr)
 #=============================================
 # Importing Dataset
 
-property_dataset <- read.csv("D:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
+property_dataset <- read.csv("C:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
 for (col in names(property_dataset)) {
   property_dataset[property_dataset == ""] <- NA
 }
@@ -46,21 +46,45 @@ property_dataset <- property_dataset %>%
   distinct()
 property_dataset
 
-# removing rows with invalid values
+# finding unique values in age column
+unique_ages <- unique(property_dataset$Age)
+unique_ages
 
+# changing age values into logical values
+property_dataset$Age <- as.numeric(as.character(property_dataset$Age)) # data type check
 
+name_check <- property_dataset %>%
+  group_by(Name) %>%
+  summarise(logical_age = median(Age, na.rm = TRUE))
 
-#=============================================
+property_dataset <- property_dataset %>%
+  left_join(name_check, by = "Name") %>%
+    mutate(Age = ifelse(is.na(Age) | Age <= 0 | Age > 120, logical_age, Age))
+property_dataset
 
+# finding unique values in occupation column
+unique_occu <- unique(property_dataset$Occupation)
+unique_occu
 
+# matching occupations with names
+property_dataset$Occupation[property_dataset$Occupation == "_______"] <- NA # converts invalid values to NA
 
-#=============================================
+occu_count <- property_dataset %>%
+  group_by(Name, Occupation) %>%
+  summarise(count = n()) %>%
+  ungroup()
 
-# Data Validation
+occu_check <- occu_count %>%
+  group_by(Name) %>%
+  slice(which.max(count)) %>%
+  select(-count)
+occu_check # outputs most common value in occupation column for each name in name column 
 
-
-
-
+property_dataset <- property_dataset %>%
+  group_by(Name) %>%
+  mutate(Occupation = ifelse(is.na(Occupation), occu_check$Occupation[match(Name, occu_check$Name)], Occupation)) %>%
+  ungroup()
+property_dataset # replaces empty values in occupation with a person's most common occupation (occu_check) (???)
 
 #=============================================
 
