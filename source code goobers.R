@@ -72,10 +72,10 @@ unique_occu
 
 # Function to fill blank occupations with the most frequent occupation in the 8-row block
 fill_occupation <- function(property_dataset) {
-  property_dataset <- property_dataset %>% mutate(Occupation = as.character(Occupation))
+  property_dataset <- property_dataset %>% mutate(Occupation = as.character(Occupation)) # treat as chara
   for (i in seq(1, nrow(property_dataset), by = 8)) {
     block <- property_dataset[i:(i+7), ]
-    # Find the most common occupation in the block that is not blank or '_______'
+    # finds the most common occupation in the block that is not blank or '_______'
     valid_occupations <- block$Occupation[block$Occupation != '' & block$Occupation != '_______']
     if (length(valid_occupations) > 0) {
       mode_occupation <- names(sort(table(valid_occupations), decreasing = TRUE))[1]
@@ -85,7 +85,6 @@ fill_occupation <- function(property_dataset) {
   return(property_dataset)
 }
 
-# Apply the function to the dataframe
 property_dataset <- fill_occupation(property_dataset)
 property_dataset
 
@@ -93,7 +92,22 @@ property_dataset
 property_dataset$Annual_Income <- gsub("_", "", property_dataset$Annual_Income)
 property_dataset
 
+# changes inconsistent values to consistent values
+incons_val <- function(property_dataset) {
+  property_dataset <- property_dataset %>% mutate(Annual_Income = as.numeric(Annual_Income)) # treat as numeric
+  for (i in seq(1, nrow(property_dataset), by = 8)) {
+    annl_inc <- property_dataset[i:(i+7), ]
+    # Find the most common annual income within 8 rows
+    cmn_income <- names(sort(table(block$Annual_Income), decreasing = TRUE))[1]
+    # Replace all 'Annual_Income' values in the block with the mode
+    property_dataset$Annual_Income[i:(i+7)] <- cmn_income
+  }
+  return(property_dataset)
+}
 
+# Apply the function to the dataframe
+property_dataset <- incons_val(property_dataset)
+property_dataset
 
 #=============================================
 
