@@ -97,9 +97,9 @@ incons_val <- function(property_dataset) {
   property_dataset <- property_dataset %>% mutate(Annual_Income = as.numeric(Annual_Income)) # treat as numeric
   for (i in seq(1, nrow(property_dataset), by = 8)) {
     annl_inc <- property_dataset[i:(i+7), ]
-    # Find the most common annual income within 8 rows
+    # Find the most common annual income within 8 rows // similar to last func
     cmn_income <- names(sort(table(annl_inc$Annual_Income), decreasing = TRUE))[1]
-    # Replace all 'Annual_Income' values in the block with the mode
+    # Replace all 'Annual_Income' values in the block with the mode // ALSO similar to last func
     property_dataset$Annual_Income[i:(i+7)] <- cmn_income
   }
   return(property_dataset)
@@ -107,7 +107,12 @@ incons_val <- function(property_dataset) {
 
 # Apply the function to the dataframe
 property_dataset <- incons_val(property_dataset)
-print(property_dataset[50:60, ])
+print(property_dataset[50:60, ]) # where first inconsistency happened // to check dataset
+
+# Monthly Inhand Salary sorting
+
+
+
 
 #=============================================
 
