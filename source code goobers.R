@@ -98,7 +98,7 @@ incons_val <- function(property_dataset) {
   for (i in seq(1, nrow(property_dataset), by = 8)) {
     annl_inc <- property_dataset[i:(i+7), ]
     # Find the most common annual income within 8 rows
-    cmn_income <- names(sort(table(block$Annual_Income), decreasing = TRUE))[1]
+    cmn_income <- names(sort(table(annl_inc$Annual_Income), decreasing = TRUE))[1]
     # Replace all 'Annual_Income' values in the block with the mode
     property_dataset$Annual_Income[i:(i+7)] <- cmn_income
   }
@@ -107,7 +107,7 @@ incons_val <- function(property_dataset) {
 
 # Apply the function to the dataframe
 property_dataset <- incons_val(property_dataset)
-property_dataset
+print(property_dataset[50:60, ])
 
 #=============================================
 
