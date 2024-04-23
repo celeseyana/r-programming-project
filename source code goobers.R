@@ -89,6 +89,12 @@ fill_occupation <- function(property_dataset) {
 property_dataset <- fill_occupation(property_dataset)
 property_dataset
 
+# removes underscore from end of string
+property_dataset$Annual_Income <- gsub("_", "", property_dataset$Annual_Income)
+property_dataset
+
+
+
 #=============================================
 
 
