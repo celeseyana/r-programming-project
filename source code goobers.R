@@ -67,24 +67,27 @@ unique_occu <- unique(property_dataset$Occupation)
 unique_occu
 
 # matching occupations with names
-property_dataset$Occupation[property_dataset$Occupation == "_______"] <- NA # converts invalid values to NA
 
-occu_count <- property_dataset %>%
-  group_by(Name, Occupation) %>%
-  summarise(count = n()) %>%
-  ungroup()
+# property_dataset$Occupation[property_dataset$Occupation == "_______"] <- NA # converts invalid values to NA
 
-occu_check <- occu_count %>%
-  group_by(Name) %>%
-  slice(which.max(count)) %>%
-  select(-count)
-occu_check # outputs most common value in occupation column for each name in name column 
+# Function to fill blank occupations with the most frequent occupation in the 8-row block
+fill_occupation <- function(property_dataset) {
+  property_dataset <- property_dataset %>% mutate(Occupation = as.character(Occupation))
+  for (i in seq(1, nrow(property_dataset), by = 8)) {
+    block <- property_dataset[i:(i+7), ]
+    # Find the most common occupation in the block that is not blank or '_______'
+    valid_occupations <- block$Occupation[block$Occupation != '' & block$Occupation != '_______']
+    if (length(valid_occupations) > 0) {
+      mode_occupation <- names(sort(table(valid_occupations), decreasing = TRUE))[1]
+      property_dataset$Occupation[i:(i+7)][property_dataset$Occupation[i:(i+7)] == '' | property_dataset$Occupation[i:(i+7)] == '_______'] <- mode_occupation
+    }
+  }
+  return(property_dataset)
+}
 
-property_dataset <- property_dataset %>%
-  group_by(Name) %>%
-  mutate(Occupation = ifelse(is.na(Occupation), occu_check$Occupation[match(Name, occu_check$Name)], Occupation)) %>%
-  ungroup()
-property_dataset # replaces empty values in occupation with a person's most common occupation (occu_check) (???)
+# Apply the function to the dataframe
+property_dataset <- fill_occupation(property_dataset)
+property_dataset
 
 #=============================================
 
