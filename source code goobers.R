@@ -27,7 +27,7 @@ library(readr)
 #=============================================
 # Importing Dataset
 
-property_dataset <- read.csv("C:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
+property_dataset <- read.csv("D:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
 for (col in names(property_dataset)) {
   property_dataset[property_dataset == ""] <- NA
 }
@@ -110,8 +110,14 @@ property_dataset <- incons_val(property_dataset)
 print(property_dataset[50:60, ]) # where first inconsistency happened // to check dataset
 
 # Monthly Inhand Salary sorting
+# IDK THE SOLUTION HELP
 
 
+# Checks for unique bank account amount values
+bank_check <- unique(property_dataset$Num_Bank_Accounts) # used to find logical range of values
+bank_check 
+
+# Bank Account Value cleaning
 
 
 #=============================================
