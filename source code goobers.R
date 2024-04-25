@@ -118,6 +118,50 @@ bank_check <- unique(property_dataset$Num_Bank_Accounts) # used to find logical 
 bank_check 
 
 # Bank Account Value cleaning
+bank_acc_val <- function(property_dataset) {
+  property_dataset <- property_dataset %>% mutate(Num_Bank_Accounts = as.numeric(Num_Bank_Accounts)) # treat as numerics
+  for (i in seq(1, nrow(property_dataset), by = 8)) {
+    bank_acc_table <- property_dataset[i:(i+7), ]
+    valid_bank_acc <- bank_acc_table$Num_Bank_Accounts[bank_acc_table$Num_Bank_Accounts <= 10 & bank_acc_table$Num_Bank_Accounts >= 0]
+    if (length(valid_bank_acc) > 0) {
+      mode_bank_acc <- names(sort(table(valid_bank_acc), decreasing = TRUE))[1]
+      # Replace values within the table only
+      property_dataset$Num_Bank_Accounts[i:(i+7)] <- ifelse(property_dataset$Num_Bank_Accounts[i:(i+7)] > 10 | property_dataset$Num_Bank_Accounts[i:(i+7)] < 0, mode_bank_acc, property_dataset$Num_Bank_Accounts[i:(i+7)])
+    }
+  }
+  return(property_dataset)
+}
+
+property_dataset <- bank_acc_val(property_dataset)
+property_dataset[260:280, ] # this is where the first irregularity appeared
+
+# checks for unqiue values in the number of credit cards column
+cc_check <- unique(property_dataset$Num_Credit_Card) # used to find logical range of values
+cc_check_sorted <- sort(cc_check, decreasing = FALSE)
+cc_check_sorted
+
+# Number of Credit Cards cleaning
+cc_val <- function(property_dataset) {
+  property_dataset <- property_dataset %>% mutate(Num_Credit_Card = as.numeric(Num_Credit_Card)) # treat as numerics
+  for (i in seq(1, nrow(property_dataset), by = 8)) {
+    cc_table <- property_dataset[i:(i+7), ]
+    valid_cc <- cc_table$Num_Credit_Card[cc_table$Num_Credit_Card <= 12 & cc_table$Num_Credit_Card >= 0]
+    if (length(valid_cc) > 0) {
+      mode_cc <- names(sort(table(valid_cc), decreasing = TRUE))[1]
+      # Replace values within the table only
+      property_dataset$Num_Credit_Card[i:(i+7)] <- ifelse(property_dataset$Num_Credit_Card[i:(i+7)] > 12 | property_dataset$Num_Credit_Card[i:(i+7)] < 0, mode_cc, property_dataset$Num_Credit_Card[i:(i+7)])
+    }
+  }
+  return(property_dataset)
+}
+
+property_dataset <- cc_val(property_dataset)
+property_dataset[10:20, ] # this is where the first irregularity appeared
+
+# Interest Rate Cleaning
+
+
+
 
 
 #=============================================
