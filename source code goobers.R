@@ -197,7 +197,7 @@ intr_val <- function(property_dataset) {
 property_dataset <- intr_val(property_dataset)
 property_dataset[40:50, ]
 
-# check for number of loan values 
+# check for num_of_loan values 
 property_dataset$Num_of_Loan <- gsub("_", "", property_dataset$Num_of_Loan)
 property_dataset <- property_dataset %>% mutate(Num_of_Loan = as.numeric(Num_of_Loan))
 property_dataset
