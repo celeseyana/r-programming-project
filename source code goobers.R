@@ -110,11 +110,6 @@ property_dataset <- incons_val(property_dataset)
 print(property_dataset[50:60, ]) # where first inconsistency happened // to check dataset
 
 
-
-
-
-
-
 # Monthly Inhand Salary sorting
 monthly_sal <- function(property_dataset) {
   property_dataset <- property_dataset %>% mutate(Monthly_Inhand_Salary = as.numeric(Monthly_Inhand_Salary)) # treat as numerics
@@ -124,21 +119,14 @@ monthly_sal <- function(property_dataset) {
     if (length(valid_monthly_sal) > 0) {
       mode_monthly_sal <- names(sort(table(valid_monthly_sal), decreasing = TRUE))[1]
       # Replace values within the table only
-      property_dataset$Monthly_Inhand_Salary[i:(i+7)] <- ifelse(property_dataset$Monthly_Inhand_Salary[i:(i+7)] == '' | is.na(property_dataset$Monthly_Inhand_Salary[i:(i+7)]), mode_monthly_sal, property_dataset$Monthly_Inhand_Salary[i:(i+7)])
+      property_dataset$Monthly_Inhand_Salary[i:(i+7)] <- ifelse(property_dataset$Monthly_Inhand_Salary[i:(i+7)] == '' | is.na(property_dataset$Monthly_Inhand_Salary[i:(i+7)]) | property_dataset$Monthly_Inhand_Salary[i:(i+7)] != mode_monthly_sal, mode_monthly_sal, property_dataset$Monthly_Inhand_Salary[i:(i+7)])
     }
   }
   return(property_dataset)
 }
 
 property_dataset <- monthly_sal(property_dataset)
-property_dataset[10:30, ] # this is where the first irregularity appeared
-
-
-
-
-
-
-
+property_dataset[45:55, ] # this is where the first irregularity appeared
 
 
 # Checks for unique bank account amount values
