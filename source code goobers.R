@@ -109,8 +109,36 @@ incons_val <- function(property_dataset) {
 property_dataset <- incons_val(property_dataset)
 print(property_dataset[50:60, ]) # where first inconsistency happened // to check dataset
 
+
+
+
+
+
+
 # Monthly Inhand Salary sorting
-# IDK THE SOLUTION HELP
+monthly_sal <- function(property_dataset) {
+  property_dataset <- property_dataset %>% mutate(Monthly_Inhand_Salary = as.numeric(Monthly_Inhand_Salary)) # treat as numerics
+  for (i in seq(1, nrow(property_dataset), by = 8)) {
+    monthly_sal_table <- property_dataset[i:(i+7), ]
+    valid_monthly_sal <- monthly_sal_table$Monthly_Inhand_Salary[monthly_sal_table$Monthly_Inhand_Salary != '' & monthly_sal_table$Monthly_Inhand_Salary >= 0]
+    if (length(valid_monthly_sal) > 0) {
+      mode_monthly_sal <- names(sort(table(valid_monthly_sal), decreasing = TRUE))[1]
+      # Replace values within the table only
+      property_dataset$Monthly_Inhand_Salary[i:(i+7)] <- ifelse(property_dataset$Monthly_Inhand_Salary[i:(i+7)] == '' | is.na(property_dataset$Monthly_Inhand_Salary[i:(i+7)]), mode_monthly_sal, property_dataset$Monthly_Inhand_Salary[i:(i+7)])
+    }
+  }
+  return(property_dataset)
+}
+
+property_dataset <- monthly_sal(property_dataset)
+property_dataset[10:30, ] # this is where the first irregularity appeared
+
+
+
+
+
+
+
 
 
 # Checks for unique bank account amount values
@@ -172,7 +200,7 @@ intr_val <- function(property_dataset) {
     if (length(valid_intr) > 0) {
       mode_intr <- names(sort(table(valid_intr), decreasing = TRUE))[1]
       # Replace values within the table only
-      property_dataset$Interest_Rate[i:(i+7)] <- ifelse(property_dataset$Interest_Rate[i:(i+7)] > 12 | property_dataset$Interest_Rate[i:(i+7)] < 0, mode_intr, property_dataset$Interest_Rate[i:(i+7)])
+      property_dataset$Interest_Rate[i:(i+7)] <- ifelse(property_dataset$Interest_Rate[i:(i+7)] > 34 | property_dataset$Interest_Rate[i:(i+7)] < 0, mode_intr, property_dataset$Interest_Rate[i:(i+7)])
     }
   }
   return(property_dataset)
@@ -186,11 +214,9 @@ property_dataset$Num_of_Loan <- gsub("_", "", property_dataset$Num_of_Loan)
 property_dataset <- property_dataset %>% mutate(Num_of_Loan = as.numeric(Num_of_Loan))
 property_dataset
 
-
 num_loan_vals <- unique(property_dataset$Num_of_Loan)
 num_loan_vals_sort <- sort(num_loan_vals, decreasing = FALSE)
 num_loan_vals_sort
-
 
 
 #=============================================
