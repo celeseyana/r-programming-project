@@ -158,9 +158,38 @@ cc_val <- function(property_dataset) {
 property_dataset <- cc_val(property_dataset)
 property_dataset[10:20, ] # this is where the first irregularity appeared
 
+# finds the unique values of the column to determine logical values
+intr_check <- unique(property_dataset$Interest_Rate)
+intr_check_sort <- sort(intr_check, decreasing = FALSE)
+intr_check_sort
+
 # Interest Rate Cleaning
+intr_val <- function(property_dataset) {
+  property_dataset <- property_dataset %>% mutate(Interest_Rate = as.numeric(Interest_Rate))
+  for (i in seq(1, nrow(property_dataset), by = 8)) {
+    intr_table <- property_dataset[i:(i+7), ]
+    valid_intr <- intr_table$Interest_Rate[intr_table$Interest_Rate <= 34 & intr_table$Interest_Rate > 0]
+    if (length(valid_intr) > 0) {
+      mode_intr <- names(sort(table(valid_intr), decreasing = TRUE))[1]
+      # Replace values within the table only
+      property_dataset$Interest_Rate[i:(i+7)] <- ifelse(property_dataset$Interest_Rate[i:(i+7)] > 12 | property_dataset$Interest_Rate[i:(i+7)] < 0, mode_intr, property_dataset$Interest_Rate[i:(i+7)])
+    }
+  }
+  return(property_dataset)
+}
+
+property_dataset <- intr_val(property_dataset)
+property_dataset[40:50, ]
+
+# check for number of loan values 
+property_dataset$Num_of_Loan <- gsub("_", "", property_dataset$Num_of_Loan)
+property_dataset <- property_dataset %>% mutate(Num_of_Loan = as.numeric(Num_of_Loan))
+property_dataset
 
 
+num_loan_vals <- unique(property_dataset$Num_of_Loan)
+num_loan_vals_sort <- sort(num_loan_vals, decreasing = FALSE)
+num_loan_vals_sort
 
 
 
