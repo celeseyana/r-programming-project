@@ -27,7 +27,7 @@ library(readr)
 #=============================================
 # Importing Dataset
 
-property_dataset <- read.csv("D:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
+property_dataset <- read.csv("C:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
 for (col in names(property_dataset)) {
   property_dataset[property_dataset == ""] <- NA
 }
@@ -151,7 +151,7 @@ bank_acc_val <- function(property_dataset) {
 property_dataset <- bank_acc_val(property_dataset)
 property_dataset[260:280, ] # this is where the first irregularity appeared
 
-# checks for unqiue values in the number of credit cards column
+# checks for unique values in the number of credit cards column
 cc_check <- unique(property_dataset$Num_Credit_Card) # used to find logical range of values
 cc_check_sorted <- sort(cc_check, decreasing = FALSE)
 cc_check_sorted
@@ -205,6 +205,62 @@ property_dataset
 num_loan_vals <- unique(property_dataset$Num_of_Loan)
 num_loan_vals_sort <- sort(num_loan_vals, decreasing = FALSE)
 num_loan_vals_sort
+
+# number of loan cleaning
+numloan_val <- function(property_dataset) {
+  property_dataset <- property_dataset %>% mutate(Num_of_Loan = as.numeric(Num_of_Loan))
+  for (i in seq(1, nrow(property_dataset), by = 8)) {
+    numloan_table <- property_dataset[i:(i+7), ]
+    valid_numloan <- numloan_table$Num_of_Loan[numloan_table$Num_of_Loan <= 9 & numloan_table$Num_of_Loan >= 0]
+    if (length(valid_numloan) > 0) {
+      mode_numloan <- names(sort(table(valid_numloan), decreasing = TRUE))[1]
+      # Replace values within the table only
+      property_dataset$Num_of_Loan[i:(i+7)] <- ifelse(property_dataset$Num_of_Loan[i:(i+7)] > 9 | property_dataset$Num_of_Loan[i:(i+7)] < 0, mode_numloan, property_dataset$Num_of_Loan[i:(i+7)])
+    }
+  }
+  return(property_dataset)
+}
+
+property_dataset <- numloan_val(property_dataset)
+
+# type of loan cleaning
+loantype_check <- unique(property_dataset$Type_of_Loan)
+loantype_check
+
+loantype_clean <- function(property_dataset) {
+  property_dataset <- property_dataset %>%
+    mutate(Type_of_Loan = ifelse(is.na(Type_of_Loan), "Not Specified", Type_of_Loan))
+  
+  return(property_dataset)
+}
+
+property_dataset <- loantype_clean(property_dataset)
+
+# Delay from due date
+duedate_vals <- unique(property_dataset$Delay_from_due_date)
+duedate_vals_sort <- sort(duedate_vals, decreasing = FALSE)
+duedate_vals_sort # values don't seem illogical at all...? probably doesn't require cleaning
+
+# Number of delayed payments
+property_dataset$Num_of_Delayed_Payment <- gsub("_", "", property_dataset$Num_of_Delayed_Payment)
+property_dataset <- property_dataset %>% mutate(Num_of_Delayed_Payment = as.numeric(Num_of_Delayed_Payment))
+
+delayed_vals <- unique(property_dataset$Num_of_Delayed_Payment)
+delayed_vals_sort <- sort(delayed_vals, decreasing = FALSE)
+delayed_vals_sort
+
+replace_with_mode_dp <- function(x) {
+  mode_value <- as.numeric(names(which.max(table(x))))
+  x[is.na(x) | x < 0 | x > 28] <- mode_value
+  return(x)
+}
+
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Num_of_Delayed_Payment = replace_with_mode_dp(Num_of_Delayed_Payment))
+
+# 
+
 
 
 #=============================================
