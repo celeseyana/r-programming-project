@@ -250,8 +250,8 @@ delayed_vals_sort <- sort(delayed_vals, decreasing = FALSE)
 delayed_vals_sort
 
 replace_with_mode_dp <- function(x) {
-  mode_value <- as.numeric(names(which.max(table(x))))
-  x[is.na(x) | x < 0 | x > 28] <- mode_value
+  mode_value_dp <- as.numeric(names(which.max(table(x))))
+  x[is.na(x) | x < 0 | x > 28] <- mode_value_dp
   return(x)
 }
 
@@ -259,7 +259,23 @@ property_dataset <- property_dataset %>%
   group_by(Customer_ID) %>%
   mutate(Num_of_Delayed_Payment = replace_with_mode_dp(Num_of_Delayed_Payment))
 
-# 
+# Changed Credit Limit
+cred_limit_vals <- unique(property_dataset$Changed_Credit_Limit)
+cred_limit_vals_sort <- sort(cred_limit_vals, decreasing = FALSE)
+cred_limit_vals_sort
+
+property_dataset$Changed_Credit_Limit <- gsub("_", "", property_dataset$Changed_Credit_Limit)
+property_dataset <- property_dataset %>% mutate(Changed_Credit_Limit = as.numeric(Changed_Credit_Limit))
+
+replace_with_mode_credlimit <- function(x) {
+  mode_value_credlimit <- as.numeric(names(which.max(table(x))))
+  x[is.na(x) | x == ""] <- mode_value_credlimit
+  return(x)
+}
+
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Changed_Credit_Limit = replace_with_mode_dp(Changed_Credit_Limit))
 
 
 
