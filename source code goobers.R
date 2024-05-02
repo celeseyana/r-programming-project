@@ -278,6 +278,63 @@ property_dataset <- property_dataset %>%
   mutate(Changed_Credit_Limit = replace_with_mode_dp(Changed_Credit_Limit))
 
 
+# Number of Credit Inquiries cleaning
+unique_cred_inq <- unique(property_dataset$Num_Credit_Inquiries)
+unique_cred_inq_sort <- sort(unique_cred_inq, decreasing = FALSE)
+unique_cred_inq_sort
+
+property_dataset <- property_dataset %>% mutate(Num_Credit_Inquiries = as.numeric(Num_Credit_Inquiries))
+
+replace_with_mode_cred_inq <- function(x) {
+  mode_value_cred_inq <- as.numeric(names(which.max(table(x))))
+  x[is.na(x) | x == ""] <- mode_value_cred_inq
+  return(x)
+}
+
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Num_Credit_Inquiries = replace_with_mode_cred_inq(Num_Credit_Inquiries))
+
+
+# Credit Mix cleaning
+unique_cred_mix <- unique(property_dataset$Credit_Mix)
+unique_cred_mix
+
+property_dataset$Credit_Mix <- gsub("_", "", property_dataset$Credit_Mix)
+
+replace_with_mode_credmix <- function(x) {
+  mode_value_credmix <- as.character(names(which.max(table(x))))
+  x[is.na(x)] <- mode_value_credmix
+  return(x)
+}
+
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Credit_Mix = replace_with_mode_credmix(Credit_Mix))
+
+
+# Outstanding Debt Cleaning
+property_dataset$Outstanding_Debt <- gsub("_", "", property_dataset$Outstanding_Debt)
+
+
+# Credit Utilization Ratio Cleaning (???? nothing wrong??)
+
+
+
+
+# Credit History Age cleaning ( continue here im too tired )
+
+
+
+
+
+
+
+
+
+
+
+
 
 #=============================================
 
