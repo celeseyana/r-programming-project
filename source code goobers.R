@@ -134,22 +134,19 @@ bank_check <- unique(property_dataset$Num_Bank_Accounts) # used to find logical 
 bank_check 
 
 # Bank Account Value cleaning
-bank_acc_val <- function(property_dataset) {
-  property_dataset <- property_dataset %>% mutate(Num_Bank_Accounts = as.numeric(Num_Bank_Accounts)) # treat as numerics
-  for (i in seq(1, nrow(property_dataset), by = 8)) {
-    bank_acc_table <- property_dataset[i:(i+7), ]
-    valid_bank_acc <- bank_acc_table$Num_Bank_Accounts[bank_acc_table$Num_Bank_Accounts <= 10 & bank_acc_table$Num_Bank_Accounts >= 0]
-    if (length(valid_bank_acc) > 0) {
-      mode_bank_acc <- names(sort(table(valid_bank_acc), decreasing = TRUE))[1]
-      # Replace values within the table only
-      property_dataset$Num_Bank_Accounts[i:(i+7)] <- ifelse(property_dataset$Num_Bank_Accounts[i:(i+7)] > 10 | property_dataset$Num_Bank_Accounts[i:(i+7)] < 0, mode_bank_acc, property_dataset$Num_Bank_Accounts[i:(i+7)])
-    }
-  }
-  return(property_dataset)
+property_dataset <- property_dataset %>% mutate(Num_Bank_Accounts = as.numeric(Num_Bank_Accounts))
+
+replace_with_mode_bankaccs <- function(x) {
+  mode_value_bankaccs <- as.numeric(names(which.max(table(x))))
+  x[x < 0 | x > 10 ] <- mode_value_bankaccs
+  return(x)
 }
 
-property_dataset <- bank_acc_val(property_dataset)
-property_dataset[260:280, ] # this is where the first irregularity appeared
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Num_Bank_Accounts = replace_with_mode_bankaccs(Num_Bank_Accounts))
+
+
 
 # checks for unique values in the number of credit cards column
 cc_check <- unique(property_dataset$Num_Credit_Card) # used to find logical range of values
@@ -157,22 +154,18 @@ cc_check_sorted <- sort(cc_check, decreasing = FALSE)
 cc_check_sorted
 
 # Number of Credit Cards cleaning
-cc_val <- function(property_dataset) {
-  property_dataset <- property_dataset %>% mutate(Num_Credit_Card = as.numeric(Num_Credit_Card)) # treat as numerics
-  for (i in seq(1, nrow(property_dataset), by = 8)) {
-    cc_table <- property_dataset[i:(i+7), ]
-    valid_cc <- cc_table$Num_Credit_Card[cc_table$Num_Credit_Card <= 12 & cc_table$Num_Credit_Card >= 0]
-    if (length(valid_cc) > 0) {
-      mode_cc <- names(sort(table(valid_cc), decreasing = TRUE))[1]
-      # Replace values within the table only
-      property_dataset$Num_Credit_Card[i:(i+7)] <- ifelse(property_dataset$Num_Credit_Card[i:(i+7)] > 12 | property_dataset$Num_Credit_Card[i:(i+7)] < 0, mode_cc, property_dataset$Num_Credit_Card[i:(i+7)])
-    }
-  }
-  return(property_dataset)
+property_dataset <- property_dataset %>% mutate(Num_Credit_Card = as.numeric(Num_Credit_Card))
+
+replace_with_mode_cc <- function(x) {
+  mode_value_cc <- as.numeric(names(which.max(table(x))))
+  x[x < 0 | x > 12 ] <- mode_value_cc
+  return(x)
 }
 
-property_dataset <- cc_val(property_dataset)
-property_dataset[10:20, ] # this is where the first irregularity appeared
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Num_Credit_Card = replace_with_mode_cc(Num_Credit_Card))
+
 
 # finds the unique values of the column to determine logical values
 intr_check <- unique(property_dataset$Interest_Rate)
@@ -180,22 +173,17 @@ intr_check_sort <- sort(intr_check, decreasing = FALSE)
 intr_check_sort
 
 # Interest Rate Cleaning
-intr_val <- function(property_dataset) {
-  property_dataset <- property_dataset %>% mutate(Interest_Rate = as.numeric(Interest_Rate))
-  for (i in seq(1, nrow(property_dataset), by = 8)) {
-    intr_table <- property_dataset[i:(i+7), ]
-    valid_intr <- intr_table$Interest_Rate[intr_table$Interest_Rate <= 34 & intr_table$Interest_Rate > 0]
-    if (length(valid_intr) > 0) {
-      mode_intr <- names(sort(table(valid_intr), decreasing = TRUE))[1]
-      # Replace values within the table only
-      property_dataset$Interest_Rate[i:(i+7)] <- ifelse(property_dataset$Interest_Rate[i:(i+7)] > 34 | property_dataset$Interest_Rate[i:(i+7)] < 0, mode_intr, property_dataset$Interest_Rate[i:(i+7)])
-    }
-  }
-  return(property_dataset)
+property_dataset <- property_dataset %>% mutate(Interest_Rate = as.numeric(Interest_Rate))
+
+replace_with_mode_intrate <- function(x) {
+  mode_value_intrate <- as.numeric(names(which.max(table(x))))
+  x[x < 0 | x > 34 ] <- mode_value_intrate
+  return(x)
 }
 
-property_dataset <- intr_val(property_dataset)
-property_dataset[40:50, ]
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Interest_Rate = replace_with_mode_intrate(Interest_Rate))
 
 # check for num_of_loan values 
 property_dataset$Num_of_Loan <- gsub("_", "", property_dataset$Num_of_Loan)
@@ -207,21 +195,17 @@ num_loan_vals_sort <- sort(num_loan_vals, decreasing = FALSE)
 num_loan_vals_sort
 
 # number of loan cleaning
-numloan_val <- function(property_dataset) {
-  property_dataset <- property_dataset %>% mutate(Num_of_Loan = as.numeric(Num_of_Loan))
-  for (i in seq(1, nrow(property_dataset), by = 8)) {
-    numloan_table <- property_dataset[i:(i+7), ]
-    valid_numloan <- numloan_table$Num_of_Loan[numloan_table$Num_of_Loan <= 9 & numloan_table$Num_of_Loan >= 0]
-    if (length(valid_numloan) > 0) {
-      mode_numloan <- names(sort(table(valid_numloan), decreasing = TRUE))[1]
-      # Replace values within the table only
-      property_dataset$Num_of_Loan[i:(i+7)] <- ifelse(property_dataset$Num_of_Loan[i:(i+7)] > 9 | property_dataset$Num_of_Loan[i:(i+7)] < 0, mode_numloan, property_dataset$Num_of_Loan[i:(i+7)])
-    }
-  }
-  return(property_dataset)
+property_dataset <- property_dataset %>% mutate(Num_of_Loan = as.numeric(Num_of_Loan))
+
+replace_with_mode_loannum <- function(x) {
+  mode_value_loannum <- as.numeric(names(which.max(table(x))))
+  x[x < 0 | x > 9 ] <- mode_value_loannum
+  return(x)
 }
 
-property_dataset <- numloan_val(property_dataset)
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Num_of_Loan = replace_with_mode_loannum(Num_of_Loan))
 
 # type of loan cleaning
 loantype_check <- unique(property_dataset$Type_of_Loan)
@@ -316,13 +300,11 @@ property_dataset <- property_dataset %>%
 # Outstanding Debt Cleaning
 property_dataset$Outstanding_Debt <- gsub("_", "", property_dataset$Outstanding_Debt)
 
-
-# Credit Utilization Ratio Cleaning (???? nothing wrong??)
-
-
+# Credit Utilization Ratio
+property_dataset$Credit_Utilization_Ratio <- round(property_dataset$Credit_Utilization_Ratio, 2)
 
 
-# Credit History Age cleaning ( continue here im too tired )
+# Credit History Age cleaning (idk)
 
 
 
@@ -330,9 +312,95 @@ property_dataset$Outstanding_Debt <- gsub("_", "", property_dataset$Outstanding_
 
 
 
+# Payment of Min Amount cleaning
+unique_paymin <- unique(property_dataset$Payment_of_Min_Amount)
+unique_paymin_sort <- sort(unique_paymin, decreasing = FALSE)
+unique_paymin_sort
+
+property_dataset <- property_dataset %>% mutate(Payment_of_Min_Amount = as.character(Payment_of_Min_Amount))
+
+replace_with_mode_paymin <- function(x) {
+  mode_value_paymin <- as.character(names(which.max(table(x))))
+  x[x == "NM"] <- mode_value_paymin
+  return(x)
+}
+
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Payment_of_Min_Amount = replace_with_mode_paymin(Payment_of_Min_Amount))
 
 
 
+
+# Total EMI per Month
+property_dataset <- property_dataset %>% mutate(Total_EMI_per_month = as.numeric(Total_EMI_per_month))
+
+replace_with_mode_emi <- function(x) {
+  mode_value_emi <- as.numeric(names(which.max(table(x))))
+  x[x > 1000] <- mode_value_emi
+  return(x)
+}
+
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Total_EMI_per_month = replace_with_mode_emi(Total_EMI_per_month))
+
+property_dataset$Total_EMI_per_month <- round(property_dataset$Total_EMI_per_month, 2)
+
+
+# Amount Invested monthly
+property_dataset$Amount_invested_monthly <- gsub("_", "", property_dataset$Amount_invested_monthly)
+property_dataset <- property_dataset %>% mutate(Amount_invested_monthly = as.numeric(Amount_invested_monthly))
+
+
+replace_with_mode_invested <- function(x) {
+  mode_value_invested <- as.numeric(names(which.max(table(x))))
+  x[is.na(x)] <- mode_value_invested
+  return(x)
+}
+
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Amount_invested_monthly = replace_with_mode_invested(Amount_invested_monthly))
+
+property_dataset$Amount_invested_monthly <- round(property_dataset$Amount_invested_monthly, 2)
+
+# Payment Behaviour cleaning
+unique_paybhv <- unique(property_dataset$Payment_Behaviour)
+unique_paybhv
+
+property_dataset <- property_dataset %>% mutate(Payment_Behaviour = as.character(Payment_Behaviour))
+
+replace_with_mode_paybhv <- function(x) {
+  mode_value_paybhv <- as.character(names(which.max(table(x))))
+  x[x == "!@9#%8"] <- mode_value_paybhv
+  return(x)
+}
+
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Payment_Behaviour = replace_with_mode_paybhv(Payment_Behaviour))
+
+
+# Monthly Balance
+property_dataset <- property_dataset %>% mutate(Monthly_Balance = as.numeric(Monthly_Balance))
+
+replace_with_mode_monthbal <- function(x) {
+  mode_value_monthbal <- as.numeric(names(which.max(table(x))))
+  x[is.na(x)] <- mode_value_monthbal
+  return(x)
+}
+
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Monthly_Balance = replace_with_mode_monthbal(Monthly_Balance))
+
+property_dataset$Monthly_Balance <- round(property_dataset$Monthly_Balance, 2)
+
+
+# Credit Score
+unique_credscore <- unique(property_dataset$Credit_Score)
+unique_credscore
 
 
 
