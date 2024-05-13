@@ -441,15 +441,15 @@ unique_credscore
 #=============================================
 
 # Joshua Tioh Chee Yong TP065839
-# Objective : 
+# Objective : To investigate the behaviour between credit score and percentile of interest rate
 
-#Analysis 1 :
+#Analysis 1 : is there a relationship between a customer's credit score and their interest rate?
 
-#Analysis 2 :
+#Analysis 2 : Does the number of loans a customer have affect their interest rate?
 
-#Analysis 3 :
+#Analysis 3 : is there a relationship between a customer's credit score and their payment behaviour?
 
-#Analysis 4 :
+#Analysis 4 : Does the number of delayed payment affect a customer's interest rate?
 
 
 #=============================================
