@@ -284,11 +284,9 @@ property_dataset <- property_dataset %>%
 unique_cred_mix <- unique(property_dataset$Credit_Mix)
 unique_cred_mix
 
-property_dataset$Credit_Mix <- gsub("_", "", property_dataset$Credit_Mix)
-
 replace_with_mode_credmix <- function(x) {
   mode_value_credmix <- as.character(names(which.max(table(x))))
-  x[is.na(x)] <- mode_value_credmix
+  x[x == "_"] <- mode_value_credmix
   return(x)
 }
 
