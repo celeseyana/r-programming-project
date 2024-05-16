@@ -413,7 +413,7 @@ unique_credscore
 # Ong Zi Yang TP065229
 # Objective : To investigate the behaviour between credit score and annual income
 
-#Analysis 1 : Is there a correlation between a person's credit score as well as their annual income?
+#Analysis 1 : Is there a correlation between a person's credit score as well as their annual income? // THIS TOOK AN HOUR AND A HALF TO DO WHY
 
 # determine min max values to determine logical range for a chart
 min_income_val <- min(property_dataset$Annual_Income)
@@ -432,7 +432,6 @@ breaks <- c(0, 20000, 40000, 60000, 80000, 100000, 120000, 140000, 160000, 18000
 # Filter the dataset by Credit_Score "Good"
 good_data <- subset(property_dataset, Credit_Score == "Good")
 
-
 # Create histogram using ggplot2
 ggplot(good_data, aes(x = cut(Annual_Income, breaks = breaks))) +
   geom_bar(fill = "skyblue") +
@@ -444,6 +443,7 @@ ggplot(good_data, aes(x = cut(Annual_Income, breaks = breaks))) +
                      expand = c(0, 0)) +  # Remove space around the axis
   labs(x = "Annual Income Range", y = "Frequency", title = "Distribution of Good Credit Score by Annual Income") +
   theme_minimal()
+
 
 #Analysis 2 : Does the occupation of an individual affect their annual income?
 
