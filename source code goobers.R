@@ -431,19 +431,45 @@ breaks <- c(0, 20000, 40000, 60000, 80000, 100000, 120000, 140000, 160000, 18000
 
 # Filter the dataset by Credit_Score "Good"
 good_data <- subset(property_dataset, Credit_Score == "Good")
+standard_data <- subset(property_dataset, Credit_Score == "Standard")
+poor_data <- subset(property_dataset, Credit_Score == "Poor")
 
-# Create histogram using ggplot2
+
+# good credit scores
 ggplot(good_data, aes(x = cut(Annual_Income, breaks = breaks))) +
   geom_bar(fill = "skyblue") +
-  geom_text(stat = "count", aes(label = ..count..), vjust = 1.5) + # Add text labels for the counts
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5) + # Add text labels for the counts
   scale_x_discrete(labels = c("0-20k", "21k-40k", "41k-60k", "61k-80k", "81k-100k",
                               "101k-120k", "121k-140k", "141k-160k", "161k-180k")) +
   scale_y_continuous(labels = seq(0, 100000, by = 20000),
                      breaks = seq(0, 100000, by = 20000),
-                     expand = c(0, 0)) +  # Remove space around the axis
-  labs(x = "Annual Income Range", y = "Frequency", title = "Distribution of Good Credit Score by Annual Income") +
+                     expand = c(0, 200)) +  # Remove space around the axis
+  labs(x = "Annual Income Range", y = "Frequency", title = "Distribution of Good Credit Scores by Annual Income") +
   theme_minimal()
 
+# standard credit scores
+ggplot(standard_data, aes(x = cut(Annual_Income, breaks = breaks))) +
+  geom_bar(fill = "skyblue") +
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5) + # Add text labels for the counts
+  scale_x_discrete(labels = c("0-20k", "21k-40k", "41k-60k", "61k-80k", "81k-100k",
+                              "101k-120k", "121k-140k", "141k-160k", "161k-180k")) +
+  scale_y_continuous(labels = seq(0, 100000, by = 20000),
+                     breaks = seq(0, 100000, by = 20000),
+                     expand = c(0, 600)) +  # Remove space around the axis
+  labs(x = "Annual Income Range", y = "Frequency", title = "Distribution of Standard Credit Scores by Annual Income") +
+  theme_minimal()
+
+# bad credit scores
+ggplot(poor_data, aes(x = cut(Annual_Income, breaks = breaks))) +
+  geom_bar(fill = "skyblue") +
+  geom_text(stat = "count", aes(label = ..count..), vjust = -0.5) + # Add text labels for the counts
+  scale_x_discrete(labels = c("0-20k", "21k-40k", "41k-60k", "61k-80k", "81k-100k",
+                              "101k-120k", "121k-140k", "141k-160k", "161k-180k")) +
+  scale_y_continuous(labels = seq(0, 100000, by = 20000),
+                     breaks = seq(0, 100000, by = 20000),
+                     expand = c(0, 400)) +  # Remove space around the axis
+  labs(x = "Annual Income Range", y = "Frequency", title = "Distribution of Good Credit Scores by Annual Income") +
+  theme_minimal()
 
 #Analysis 2 : Does the occupation of an individual affect their annual income?
 
