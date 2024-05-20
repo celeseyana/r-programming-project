@@ -543,13 +543,13 @@ ggplot(poor_data, aes(x = cut(Annual_Income, breaks = breaks))) +
 # Wong Wei Hann TP065820
 # Objective : To investigate the behaviour between credit score and number of bank accounts
 
-#Analysis 1 :
+#Analysis 1 : is there a relationship between the customers' credit score and the number of bank acounts they hold?
 
-#Analysis 2 :
+#Analysis 2 : does the type of bank accounts affect a customers' credit score?
 
-#Analysis 3 :
+#Analysis 3 : is there a relationship between a customers' credit score and their account balance behaviour
 
-#Analysis 4 :
+#Analysis 4 : does the number of inactive accounts affect the customers' credit score?
 
 
 #=============================================
