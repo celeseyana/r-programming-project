@@ -490,13 +490,22 @@ ggplot(poor_data, aes(x = cut(Annual_Income, breaks = breaks))) +
   theme_minimal()
 
 #Analysis 2 : Does the occupation of an individual affect their annual income?
+unique_occu <- unique(property_dataset$Occupation)
+unique_occu
+
+# find da average annual income for the chart
+avg_annl_income <- property_dataset %>%
+  group_by(property_dataset$Occupation) %>%
+  summarize(Avg_Annual_Income = round(mean(Annual_Income, na.rm = TRUE)))
+avg_annl_income
 
 
 
-
-
-
-
+ggplot(avg_annl_income, aes(x = unique_occu, y = Avg_Annual_Income)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  geom_text(aes(label = Avg_Annual_Income), vjust = -0.5, color = "black") +
+  theme_minimal() +
+  labs(title = "Average Annual Income by Occupation", x = "Occupation", y = "Average Annual Income")
 
 
 #Analysis 3 : Is there a correlation between an individual's payment behaviour and their credit score?
