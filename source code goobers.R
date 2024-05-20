@@ -46,6 +46,22 @@ property_dataset <- property_dataset %>%
   distinct()
 property_dataset
 
+# name change rm na
+
+property_dataset <- property_dataset %>% mutate(Name = as.character(Name))
+
+replace_with_mode_name <- function(x) {
+  mode_value_name <- as.character(names(which.max(table(x))))
+  x[is.na(x)] <- mode_value_name
+  return(x)
+}
+
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Name = replace_with_mode_name(Name))
+
+
+
 # finding unique values in age column
 unique_ages <- unique(property_dataset$Age)
 unique_ages
@@ -205,7 +221,9 @@ replace_with_mode_loannum <- function(x) {
 
 property_dataset <- property_dataset %>%
   group_by(Customer_ID) %>%
-  mutate(Num_of_Loan = replace_with_mode_loannum(Num_of_Loan))
+  mutate(Num_of_Loan = replace_with_mode_loannum(Num_of_Loan)) %>%
+  ungroup() %>%
+  mutate(Num_of_Loan = ifelse(Num_of_Loan == 0, "null", Num_of_Loan))
 
 # type of loan cleaning
 loantype_check <- unique(property_dataset$Type_of_Loan)
