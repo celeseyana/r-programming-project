@@ -510,6 +510,41 @@ ggplot(poor_data, aes(x = cut(Annual_Income, breaks = breaks))) +
 
 #Analysis 1 : is there a relationship between a customer's credit score and their interest rate?
 
+property_dataset$Interest_Rate <- as.numeric(property_dataset$Interest_Rate)
+
+
+# Calculate summary statistics
+good_min <- min(good_data$Interest_Rate)
+good_max <- max(good_data$Interest_Rate)
+good_avg <- mean(good_data$Interest_Rate)
+
+poor_min <- min(poor_data$Interest_Rate)
+poor_max <- max(poor_data$Interest_Rate)
+poor_avg <- mean(poor_data$Interest_Rate)
+
+standard_min <- min(standard_data$Interest_Rate)
+standard_max <- max(standard_data$Interest_Rate)
+standard_avg <- mean(standard_data$Interest_Rate)
+
+
+# Create bar chart
+bar_data <- matrix(c(good_min, poor_min, standard_min,
+                     good_max, poor_max, standard_max,
+                     good_avg, poor_avg, standard_avg),
+                   nrow = 3, byrow = TRUE)
+barplot(bar_data, beside = TRUE, col = c("blue", "red", "green"),
+        ylim = c(0, max(bar_data) + 10),
+        names.arg = c("Good Data", "Poor Data", "Standard Data"),
+        main = "Summary Statistics Bar Chart",
+        xlab = "Datasets", ylab = "Values")
+legend("topright", legend = c("Min", "Max", "Avg"),
+       fill = c("blue", "red", "green"))
+
+
+
+
+
+
 #Analysis 2 : Does the number of loans a customer have affect their interest rate?
 
 #Analysis 3 : is there a relationship between a customer's credit score and their payment behaviour?
@@ -543,13 +578,13 @@ ggplot(poor_data, aes(x = cut(Annual_Income, breaks = breaks))) +
 # Wong Wei Hann TP065820
 # Objective : To investigate the behaviour between credit score and number of bank accounts
 
-#Analysis 1 : is there a relationship between the customers' credit score and the number of bank acounts they hold?
+#Analysis 1 :
 
-#Analysis 2 : does the type of bank accounts affect a customers' credit score?
+#Analysis 2 :
 
-#Analysis 3 : is there a relationship between a customers' credit score and their account balance behaviour
+#Analysis 3 :
 
-#Analysis 4 : does the number of inactive accounts affect the customers' credit score?
+#Analysis 4 :
 
 
 #=============================================
