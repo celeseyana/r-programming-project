@@ -386,10 +386,11 @@ unique_paybhv <- unique(property_dataset$Payment_Behaviour)
 unique_paybhv
 
 property_dataset <- property_dataset %>% mutate(Payment_Behaviour = as.character(Payment_Behaviour))
+property_dataset$Payment_Behaviour[property_dataset$Payment_Behaviour == "!@9#%8"] <- NA
 
 replace_with_mode_paybhv <- function(x) {
   mode_value_paybhv <- as.character(names(which.max(table(x))))
-  x[x == "!@9#%8"] <- mode_value_paybhv
+  x[x == "!@9#%8" | is.na(x)] <- mode_value_paybhv
   return(x)
 }
 
@@ -500,7 +501,6 @@ avg_annl_income <- property_dataset %>%
 avg_annl_income
 
 
-
 ggplot(avg_annl_income, aes(x = unique_occu, y = Avg_Annual_Income)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   geom_text(aes(label = Avg_Annual_Income), vjust = -0.5, color = "black") +
@@ -509,13 +509,29 @@ ggplot(avg_annl_income, aes(x = unique_occu, y = Avg_Annual_Income)) +
 
 
 #Analysis 3 : Is there a correlation between an individual's payment behaviour and their credit score?
+unique_paymentbhv <- unique(property_dataset$Payment_Behaviour)
+unique_paymentbhv
 
+# Good credit score
+ggplot(good_data, aes(x = Payment_Behaviour)) +
+  geom_bar(fill = "steelblue") +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5, color = "black") +
+  theme_minimal() +
+  labs(title = "Frequency of Payment Behaviour Values", x = "Payment Behaviour", y = "Frequency")
 
+# poor credit score
+ggplot(poor_data, aes(x = Payment_Behaviour)) +
+  geom_bar(fill = "steelblue") +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5, color = "black") +
+  theme_minimal() +
+  labs(title = "Frequency of Payment Behaviour Values", x = "Payment Behaviour", y = "Frequency")
 
-
-
-
-
+# standard credit score
+ggplot(standard_data, aes(x = Payment_Behaviour)) +
+  geom_bar(fill = "steelblue") +
+  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5, color = "black") +
+  theme_minimal() +
+  labs(title = "Frequency of Payment Behaviour Values", x = "Payment Behaviour", y = "Frequency")
 
 
 #Analysis 4 : Does an individual's credit utilization ratio have an effect on their credit score?
