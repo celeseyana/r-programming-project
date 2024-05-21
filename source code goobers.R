@@ -536,7 +536,7 @@ ggplot(standard_data, aes(x = Payment_Behaviour)) +
   labs(title = "Frequency of Payment Behaviour Values", x = "Payment Behaviour", y = "Frequency")
 
 
-#Analysis 4 : Does an individual's credit utilization ratio have an effect on their credit score? // Scatter Plot
+#Analysis 4 : Does an individual's credit utilization ratio have an effect on their credit score? // Jitter  Plot
 
 # im the goat 
 ggplot(property_dataset, aes(x = Credit_Score, y = Credit_Utilization_Ratio, color = Credit_Score)) +
@@ -546,13 +546,10 @@ ggplot(property_dataset, aes(x = Credit_Score, y = Credit_Utilization_Ratio, col
        y = "Credit Utilization Ratio") +
   theme_minimal()
 
-# Extra Analysis 1 //
+# Extra Analysis 1 : // 
 
-
-
-
-
-
+credit_income_set <- property_dataset[, c("Credit_Score", "Annual_Income")]
+credit_income_set
 
 # Extra Analysis 2 // 
 
