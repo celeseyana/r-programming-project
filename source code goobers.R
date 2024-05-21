@@ -536,6 +536,25 @@ ggplot(standard_data, aes(x = Payment_Behaviour)) +
 
 #Analysis 4 : Does an individual's credit utilization ratio have an effect on their credit score?
 
+# im the goat 
+ggplot(property_dataset, aes(x = Credit_Score, y = Credit_Utilization_Ratio, color = Credit_Score)) +
+  geom_point(position = position_jitter(width = 0.2, height = 0)) +
+  labs(title = "Credit Utilization Ratio vs. Credit Score",
+       x = "Credit Score",
+       y = "Credit Utilization Ratio") +
+  theme_minimal()
+
+# Extra Analysis 1
+
+
+
+# Extra Analysis 2
+
+
+
+
+
+# Extra Analysis 3
 
 
 
