@@ -27,7 +27,7 @@ library(readr)
 #=============================================
 # Importing Dataset
 
-property_dataset <- read.csv("C:\\Github\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
+property_dataset <- read.csv("D:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
 for (col in names(property_dataset)) {
   property_dataset[property_dataset == ""] <- NA
 }
@@ -289,7 +289,7 @@ property_dataset <- property_dataset %>% mutate(Num_Credit_Inquiries = as.numeri
 
 replace_with_mode_cred_inq <- function(x) {
   mode_value_cred_inq <- as.numeric(names(which.max(table(x))))
-  x[is.na(x) | x == ""] <- mode_value_cred_inq
+  x[is.na(x) | x == "" | x > 17] <- mode_value_cred_inq
   return(x)
 }
 
@@ -302,9 +302,11 @@ property_dataset <- property_dataset %>%
 unique_cred_mix <- unique(property_dataset$Credit_Mix)
 unique_cred_mix
 
+property_dataset$Credit_Mix[property_dataset$Credit_Mix == "_"] <- NA
+
 replace_with_mode_credmix <- function(x) {
   mode_value_credmix <- as.character(names(which.max(table(x))))
-  x[x == "_"] <- mode_value_credmix
+  x[is.na(x) | x == "_"] <- mode_value_credmix
   return(x)
 }
 
@@ -432,7 +434,7 @@ unique_credscore
 # Ong Zi Yang TP065229
 # Objective : To investigate the behaviour between credit score and annual income
 
-#Analysis 1 : Is there a correlation between a person's credit score as well as their annual income? // THIS TOOK AN HOUR AND A HALF TO DO WHY
+#Analysis 1 : Is there a correlation between a person's credit score as well as their annual income? // THIS TOOK AN HOUR AND A HALF TO DO WHY // Histogram
 
 # determine min max values to determine logical range for a chart
 min_income_val <- min(property_dataset$Annual_Income)
@@ -490,7 +492,7 @@ ggplot(poor_data, aes(x = cut(Annual_Income, breaks = breaks))) +
   labs(x = "Annual Income Range", y = "Frequency", title = "Distribution of Good Credit Scores by Annual Income") +
   theme_minimal()
 
-#Analysis 2 : Does the occupation of an individual affect their annual income?
+#Analysis 2 : Does the occupation of an individual affect their annual income? // Histogram
 unique_occu <- unique(property_dataset$Occupation)
 unique_occu
 
@@ -508,7 +510,7 @@ ggplot(avg_annl_income, aes(x = unique_occu, y = Avg_Annual_Income)) +
   labs(title = "Average Annual Income by Occupation", x = "Occupation", y = "Average Annual Income")
 
 
-#Analysis 3 : Is there a correlation between an individual's payment behaviour and their credit score?
+#Analysis 3 : Is there a correlation between an individual's payment behaviour and their credit score? // Histogram
 unique_paymentbhv <- unique(property_dataset$Payment_Behaviour)
 unique_paymentbhv
 
@@ -534,7 +536,7 @@ ggplot(standard_data, aes(x = Payment_Behaviour)) +
   labs(title = "Frequency of Payment Behaviour Values", x = "Payment Behaviour", y = "Frequency")
 
 
-#Analysis 4 : Does an individual's credit utilization ratio have an effect on their credit score?
+#Analysis 4 : Does an individual's credit utilization ratio have an effect on their credit score? // Scatter Plot
 
 # im the goat 
 ggplot(property_dataset, aes(x = Credit_Score, y = Credit_Utilization_Ratio, color = Credit_Score)) +
@@ -544,17 +546,26 @@ ggplot(property_dataset, aes(x = Credit_Score, y = Credit_Utilization_Ratio, col
        y = "Credit Utilization Ratio") +
   theme_minimal()
 
-# Extra Analysis 1
-
-
-
-# Extra Analysis 2
+# Extra Analysis 1 //
 
 
 
 
 
-# Extra Analysis 3
+
+
+# Extra Analysis 2 // 
+
+
+
+
+
+
+
+# Extra Analysis 3 // 
+
+
+
 
 
 
