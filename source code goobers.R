@@ -579,6 +579,10 @@ credit_income_set
 # Objective : To investigate the behaviour between credit score and percentile of interest rate
 
 #Analysis 1 : is there a relationship between a customer's credit score and their interest rate?
+good_data <- subset(property_dataset, Credit_Score == "Good")
+standard_data <- subset(property_dataset, Credit_Score == "Standard")
+poor_data <- subset(property_dataset, Credit_Score == "Poor")
+
 
 property_dataset$Interest_Rate <- as.numeric(property_dataset$Interest_Rate)
 
@@ -613,25 +617,47 @@ legend("topright", legend = c("Min", "Max", "Avg"),
 #Analysis 2 : Does the number of loans a customer have affect their interest rate?
 property_dataset$Num_of_Loan <- as.numeric(property_dataset$Num_of_Loan)
 
-
-
 # Create data
-data <- data.frame(x= Num_of_Loan, y= Interest_Rate)
 
-# Draw line on top
-plot(data, col=rgb(0.2,0.1,0.5,0.9), type="o", lwd=3, xlab="", ylab="size",
-     pch=20)
+library(ggplot2)
 
-# Fill the area
-polygon(c(min(data$x), data$x, max(data$x)),
-        c(min(data$y), data$y, min(data$y)),
-        col=rgb(0.2,0.1,0.5,0.2), border=FALSE)
-  
-  
+library(ggplot2)
+
+# Create the scatter plot
+ggplot(data, aes(x = Loans, y = rate)) +
+  geom_point(color = "blue", alpha = 0.6) + # Points with some transparency
+  labs(title = "Scatter Plot of Number of Loans vs. Interest Rate",
+       x = "Number of Loans",
+       y = "Interest Rate") +
+  theme_minimal() +
+  geom_smooth(method = "lm", col = "red") # Adding a trend line
+
+# Check for NA values in the columns
+sum(is.na(data$Loans))
+sum(is.na(data$rate))
+
+# Remove rows with NA values
+data_clean <- na.omit(data)
 
 
+# Calculate the correlation coefficient after removing NA values
+correlation <- cor(data_clean$Loans, data_clean$rate)
+print(paste("Pearson correlation coefficient: ", round(correlation, 2)))
 
+# Fit the linear model
+model <- lm(rate ~ Loans, data = data_clean)
 
+# Summarize the model
+summary(model)
+
+# Plot the residuals
+ggplot(model, aes(.fitted, .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  labs(title = "Residuals vs Fitted Values",
+       x = "Fitted Values",
+       y = "Residuals") +
+  theme_minimal()
 
 #Analysis 3 : is there a relationship between a customer's credit score and their payment behaviour?
 
