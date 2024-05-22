@@ -604,20 +604,40 @@ bar_data <- matrix(c(good_min, poor_min, standard_min,
                    nrow = 3, byrow = TRUE)
 barplot(bar_data, beside = TRUE, col = c("blue", "red", "green"),
         ylim = c(0, max(bar_data) + 10),
-        names.arg = c("Good Data", "Poor Data", "Standard Data"),
-        main = "Summary Statistics Bar Chart",
-        xlab = "Datasets", ylab = "Values")
+        names.arg = c("Good Score", "Poor Score", "Standard Score"),
+        main = "Interest Rate Bar Chart",
+        xlab = "Type of Credit Score", ylab = "Interest Rate")
 legend("topright", legend = c("Min", "Max", "Avg"),
        fill = c("blue", "red", "green"))
 
-
-
-
-
-
 #Analysis 2 : Does the number of loans a customer have affect their interest rate?
+property_dataset$Num_of_Loan <- as.numeric(property_dataset$Num_of_Loan)
+
+
+
+# Create data
+data <- data.frame(x= Num_of_Loan, y= Interest_Rate)
+
+# Draw line on top
+plot(data, col=rgb(0.2,0.1,0.5,0.9), type="o", lwd=3, xlab="", ylab="size",
+     pch=20)
+
+# Fill the area
+polygon(c(min(data$x), data$x, max(data$x)),
+        c(min(data$y), data$y, min(data$y)),
+        col=rgb(0.2,0.1,0.5,0.2), border=FALSE)
+  
+  
+
+
+
+
 
 #Analysis 3 : is there a relationship between a customer's credit score and their payment behaviour?
+
+
+
+
 
 #Analysis 4 : Does the number of delayed payment affect a customer's interest rate?
 
