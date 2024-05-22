@@ -629,7 +629,6 @@ property_dataset$Num_of_Loan <- as.numeric(property_dataset$Num_of_Loan)
 
 # Create data
 
-library(ggplot2)
 
 library(ggplot2)
 
