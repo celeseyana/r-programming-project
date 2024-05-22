@@ -368,7 +368,11 @@ property_dataset$Total_EMI_per_month <- round(property_dataset$Total_EMI_per_mon
 
 # Amount Invested monthly
 property_dataset$Amount_invested_monthly <- gsub("_", "", property_dataset$Amount_invested_monthly)
+
+property_dataset$Amount_invested_monthly[property_dataset$Amount_invested_monthly == "10000"] <- NA
+
 property_dataset <- property_dataset %>% mutate(Amount_invested_monthly = as.numeric(Amount_invested_monthly))
+
 
 
 replace_with_mode_invested <- function(x) {
@@ -382,6 +386,8 @@ property_dataset <- property_dataset %>%
   mutate(Amount_invested_monthly = replace_with_mode_invested(Amount_invested_monthly))
 
 property_dataset$Amount_invested_monthly <- round(property_dataset$Amount_invested_monthly, 2)
+
+
 
 # Payment Behaviour cleaning
 unique_paybhv <- unique(property_dataset$Payment_Behaviour)
@@ -546,26 +552,30 @@ ggplot(property_dataset, aes(x = Credit_Score, y = Credit_Utilization_Ratio, col
        y = "Credit Utilization Ratio") +
   theme_minimal()
 
-# Extra Analysis 1 : // 
+# Extra Analysis 1 : Relationship between Credit Score and Interest Rate of an individual // Violin Plot
 
-credit_income_set <- property_dataset[, c("Credit_Score", "Annual_Income")]
-credit_income_set
+ggplot(property_dataset, aes(x = Credit_Score, y = Delay_from_due_date)) +
+  geom_violin(fill = "skyblue", color = "black") +
+  geom_boxplot(width = 0.1, fill = "white", color = "black") +  # Add box plot for comparison
+  labs(x = "Credit Score", y = "Delay from due date") +
+  ggtitle("Violin Plot of Delay from Due Date by Credit Score") +
+  theme_minimal()
 
-# Extra Analysis 2 // 
+unique_delayvals <- unique(property_dataset$Delay_from_due_date)
+unique_delayvals
 
+# Extra Analysis 2 : Relationship between Annual Income and Amount Invested Monthly // Pearson's Correlation | r > 0.5 // pearson's here outputs a coefficient of 0.6 == strong positive correlation
 
+correlation <- cor(property_dataset$Annual_Income, property_dataset$Amount_invested_monthly, method = "pearson")
+correlation # this shows the coefficient 
 
-
-
-
-
-# Extra Analysis 3 // 
-
-
-
-
-
-
+ggplot(property_dataset, aes(x = Annual_Income, y = Amount_invested_monthly)) +
+  geom_point(color = "steelblue") +  # Add points
+  geom_smooth(method = "lm", se = FALSE, color = "black") +  # Add trend line
+  labs(x = "Annual Income", y = "Amount Invested Monthly") +  # Axis labels
+  ggtitle("Scatter Plot of Annual Income vs. Amount Invested Monthly") +  # Plot title
+  geom_text(x = 50000, y = 2000, label = paste("Correlation coefficient:", round(cor(property_dataset$Annual_Income, property_dataset$Amount_invested_monthly), 2))) +  # Display correlation coefficient
+  theme_minimal()  # Apply minimal theme
 
 
 
