@@ -703,14 +703,17 @@ ggplot(model, aes(.fitted, .resid)) +
 # Wong Wei Hann TP065820
 # Objective : To investigate the behaviour between credit score and number of bank accounts
 
-#Analysis 1 :
+#Analysis 1 : is there a relationship between the customers' credit score and the number of bank acounts they hold?
 
-#Analysis 2 :
+#Analysis 2 : does the type of loan accounts affect a customers' credit score?
 
-#Analysis 3 :
+#Analysis 3 : is there a relationship between a customers' credit score and their account payment behaviour
 
-#Analysis 4 :
+#Analysis 4 : does the number of bank accounts customers' affect interest rate
 
+# Extra Analysis 1 : is there a relationship between a customer's credit score and their change credit limit?
+
+# Extra Analysis 2 : is there a relationship between a customer's credit score and their Outstanding Debt?
 
 #=============================================
 
