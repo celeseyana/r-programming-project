@@ -27,7 +27,7 @@ library(readr)
 #=============================================
 # Importing Dataset
 
-property_dataset <- read.csv("D:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
+property_dataset <- read.csv("C:\\Github\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
 for (col in names(property_dataset)) {
   property_dataset[property_dataset == ""] <- NA
 }
@@ -552,7 +552,7 @@ ggplot(property_dataset, aes(x = Credit_Score, y = Credit_Utilization_Ratio, col
        y = "Credit Utilization Ratio") +
   theme_minimal()
 
-# Extra Analysis 1 : Relationship between Credit Score and Interest Rate of an individual // Violin Plot
+# Extra Analysis 1 : Relationship between Credit Score and Delay from due date // Violin Plot
 
 ggplot(property_dataset, aes(x = Credit_Score, y = Delay_from_due_date)) +
   geom_violin(fill = "skyblue", color = "black") +
@@ -703,14 +703,17 @@ ggplot(model, aes(.fitted, .resid)) +
 # Wong Wei Hann TP065820
 # Objective : To investigate the behaviour between credit score and number of bank accounts
 
-#Analysis 1 :
+#Analysis 1 : is there a relationship between the customers' credit score and the number of bank acounts they hold?
 
-#Analysis 2 :
+#Analysis 2 : does the type of loan accounts affect a customers' credit score?
 
-#Analysis 3 :
+#Analysis 3 : is there a relationship between a customers' credit score and their account payment behaviour
 
-#Analysis 4 :
+#Analysis 4 : does number of bank accounts customers' affect interest rate
 
+# Extra Analysis 1 : is there a relationship between a customer's credit score and their change credit limit?
+
+# Extra Analysis 2 : is there a relationship between a customer's credit score and their Outstanding Debt?
 
 #=============================================
 
