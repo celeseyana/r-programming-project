@@ -225,7 +225,7 @@ loantype_check
 
 loantype_clean <- function(property_dataset) {
   property_dataset <- property_dataset %>%
-    mutate(Type_of_Loan = ifelse(is.na(Type_of_Loan), "Not Specified", Type_of_Loan))
+    mutate(Type_of_Loan = ifelse(is.na(Type_of_Loan), "No Loans Taken", Type_of_Loan))
   
   return(property_dataset)
 }
@@ -235,7 +235,7 @@ property_dataset <- loantype_clean(property_dataset)
 # Delay from due date
 duedate_vals <- unique(property_dataset$Delay_from_due_date)
 duedate_vals_sort <- sort(duedate_vals, decreasing = FALSE)
-duedate_vals_sort # values don't seem illogical at all...? probably doesn't require cleaning
+duedate_vals_sort # values don't seem illogical at all...
 
 # Number of delayed payments
 property_dataset$Num_of_Delayed_Payment <- gsub("_", "", property_dataset$Num_of_Delayed_Payment)
