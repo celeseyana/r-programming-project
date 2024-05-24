@@ -27,7 +27,7 @@ library(readr)
 #=============================================
 # Importing Dataset
 
-property_dataset <- read.csv("D:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
+property_dataset <- read.csv("C:\\Github\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
 for (col in names(property_dataset)) {
   property_dataset[property_dataset == ""] <- NA
 }
@@ -67,82 +67,76 @@ unique_ages <- unique(property_dataset$Age)
 unique_ages
 
 # changing age values into logical values
-property_dataset$Age <- as.numeric(as.character(property_dataset$Age)) # data type check
+property_dataset$Age <- gsub("_", "", property_dataset$Age)
+property_dataset$Age <- gsub("-", "", property_dataset$Age)
+property_dataset <- property_dataset %>% mutate(Age = as.numeric(Age))
 
-name_check <- property_dataset %>%
-  group_by(Name) %>%
-  summarise(logical_age = median(Age, na.rm = TRUE))
+replace_with_mode_age <- function(x) {
+  mode_value_age <- as.numeric(names(which.max(table(x))))
+  x[is.na(x) | x > 100] <- mode_value_age
+  return(x)
+}
 
 property_dataset <- property_dataset %>%
-  left_join(name_check, by = "Name") %>%
-    mutate(Age = ifelse(is.na(Age) | Age <= 0 | Age > 120, logical_age, Age))
-property_dataset
+  group_by(Customer_ID) %>%
+  mutate(Age = replace_with_mode_age(Age))
+
 
 # finding unique values in occupation column
 unique_occu <- unique(property_dataset$Occupation)
 unique_occu
 
-# matching occupations with names
+# Function to fill blank occupations with the most frequent occupation 
+property_dataset <- property_dataset %>% mutate(Occupation = as.character(Occupation))
 
-# property_dataset$Occupation[property_dataset$Occupation == "_______"] <- NA # converts invalid values to NA
-
-# Function to fill blank occupations with the most frequent occupation in the 8-row block
-fill_occupation <- function(property_dataset) {
-  property_dataset <- property_dataset %>% mutate(Occupation = as.character(Occupation)) # treat as chara
-  for (i in seq(1, nrow(property_dataset), by = 8)) {
-    block <- property_dataset[i:(i+7), ]
-    # finds the most common occupation in the block that is not blank or '_______'
-    valid_occupations <- block$Occupation[block$Occupation != '' & block$Occupation != '_______']
-    if (length(valid_occupations) > 0) {
-      mode_occupation <- names(sort(table(valid_occupations), decreasing = TRUE))[1]
-      property_dataset$Occupation[i:(i+7)][property_dataset$Occupation[i:(i+7)] == '' | property_dataset$Occupation[i:(i+7)] == '_______'] <- mode_occupation
-    }
-  }
-  return(property_dataset)
+replace_with_mode_occu <- function(x) {
+  mode_value_occu <- as.character(names(which.max(table(x))))
+  x[is.na(x) | x == '_______'] <- mode_value_occu
+  return(x)
 }
 
-property_dataset <- fill_occupation(property_dataset)
-property_dataset
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Occupation = replace_with_mode_occu(Occupation))
 
+# Annual Income cleaning
 # removes underscore from end of string
 property_dataset$Annual_Income <- gsub("_", "", property_dataset$Annual_Income)
 property_dataset
 
+property_dataset <- property_dataset %>% mutate(Annual_Income = as.numeric(Annual_Income))
+property_dataset$Annual_Income <- round(property_dataset$Annual_Income, 2)
+
+annlinc_check <- unique(property_dataset$Annual_Income) # used to find logical range of values
+annlinc_check_sorted <- sort(annlinc_check, decreasing = TRUE)
+annlinc_check_sorted
+
 # changes inconsistent values to consistent values
-incons_val <- function(property_dataset) {
-  property_dataset <- property_dataset %>% mutate(Annual_Income = as.numeric(Annual_Income)) # treat as numeric
-  for (i in seq(1, nrow(property_dataset), by = 8)) {
-    annl_inc <- property_dataset[i:(i+7), ]
-    # Find the most common annual income within 8 rows // similar to last func
-    cmn_income <- names(sort(table(annl_inc$Annual_Income), decreasing = TRUE))[1]
-    # Replace all 'Annual_Income' values in the block with the mode // ALSO similar to last func
-    property_dataset$Annual_Income[i:(i+7)] <- cmn_income
-  }
-  return(property_dataset)
+
+replace_with_mode_annlinc <- function(x) {
+  mode_value_annlinc <- as.numeric(names(which.max(table(x))))
+  x[x > 180000] <- mode_value_annlinc
+  return(x)
 }
 
-# Apply the function to the dataframe
-property_dataset <- incons_val(property_dataset)
-print(property_dataset[50:60, ]) # where first inconsistency happened // to check dataset
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Annual_Income = replace_with_mode_annlinc(Annual_Income))
 
 
 # Monthly Inhand Salary sorting
-monthly_sal <- function(property_dataset) {
-  property_dataset <- property_dataset %>% mutate(Monthly_Inhand_Salary = as.numeric(Monthly_Inhand_Salary)) # treat as numerics
-  for (i in seq(1, nrow(property_dataset), by = 8)) {
-    monthly_sal_table <- property_dataset[i:(i+7), ]
-    valid_monthly_sal <- monthly_sal_table$Monthly_Inhand_Salary[monthly_sal_table$Monthly_Inhand_Salary != '' & monthly_sal_table$Monthly_Inhand_Salary >= 0]
-    if (length(valid_monthly_sal) > 0) {
-      mode_monthly_sal <- names(sort(table(valid_monthly_sal), decreasing = TRUE))[1]
-      # Replace values within the table only
-      property_dataset$Monthly_Inhand_Salary[i:(i+7)] <- ifelse(property_dataset$Monthly_Inhand_Salary[i:(i+7)] == '' | is.na(property_dataset$Monthly_Inhand_Salary[i:(i+7)]) | property_dataset$Monthly_Inhand_Salary[i:(i+7)] != mode_monthly_sal, mode_monthly_sal, property_dataset$Monthly_Inhand_Salary[i:(i+7)])
-    }
-  }
-  return(property_dataset)
+property_dataset <- property_dataset %>% mutate(Monthly_Inhand_Salary = as.numeric(Monthly_Inhand_Salary))
+property_dataset$Monthly_Inhand_Salary <- round(property_dataset$Monthly_Inhand_Salary, 2)
+
+replace_with_mode_mis <- function(x) {
+  mode_value_mis <- as.numeric(names(which.max(table(x))))
+  x[is.na(x)] <- mode_value_mis
+  return(x)
 }
 
-property_dataset <- monthly_sal(property_dataset)
-property_dataset[45:55, ] # this is where the first irregularity appeared
+property_dataset <- property_dataset %>%
+  group_by(Customer_ID) %>%
+  mutate(Monthly_Inhand_Salary = replace_with_mode_mis(Monthly_Inhand_Salary))
 
 
 # Checks for unique bank account amount values
@@ -322,7 +316,7 @@ property_dataset$Outstanding_Debt <- gsub("_", "", property_dataset$Outstanding_
 property_dataset$Credit_Utilization_Ratio <- round(property_dataset$Credit_Utilization_Ratio, 2)
 
 
-# Credit History Age cleaning (idk)
+# Credit History Age cleaning (idk SOMEONE DO THIS)
 
 
 
