@@ -519,21 +519,21 @@ ggplot(good_data, aes(x = Payment_Behaviour)) +
   geom_bar(fill = "steelblue") +
   geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5, color = "black") +
   theme_minimal() +
-  labs(title = "Frequency of Payment Behaviour Values", x = "Payment Behaviour", y = "Frequency")
+  labs(title = "Frequency of Payment Behaviour Values (Good credit score)", x = "Payment Behaviour", y = "Frequency")
 
 # poor credit score
 ggplot(poor_data, aes(x = Payment_Behaviour)) +
   geom_bar(fill = "steelblue") +
   geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5, color = "black") +
   theme_minimal() +
-  labs(title = "Frequency of Payment Behaviour Values", x = "Payment Behaviour", y = "Frequency")
+  labs(title = "Frequency of Payment Behaviour Values (Poor credit score)", x = "Payment Behaviour", y = "Frequency")
 
 # standard credit score
 ggplot(standard_data, aes(x = Payment_Behaviour)) +
   geom_bar(fill = "steelblue") +
   geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5, color = "black") +
   theme_minimal() +
-  labs(title = "Frequency of Payment Behaviour Values", x = "Payment Behaviour", y = "Frequency")
+  labs(title = "Frequency of Payment Behaviour Values (Standard credit score)", x = "Payment Behaviour", y = "Frequency")
 
 
 #Analysis 4 : Does an individual's credit utilization ratio have an effect on their credit score? // Jitter  Plot
@@ -546,7 +546,7 @@ ggplot(property_dataset, aes(x = Credit_Score, y = Credit_Utilization_Ratio, col
        y = "Credit Utilization Ratio") +
   theme_minimal()
 
-# Extra Analysis 1 : Relationship between Credit Score and Interest Rate of an individual // Violin Plot
+# Extra Analysis 1 : Relationship between Credit Score and Delay from due date of an individual // Violin Plot
 
 ggplot(property_dataset, aes(x = Credit_Score, y = Delay_from_due_date)) +
   geom_violin(fill = "skyblue", color = "black") +
