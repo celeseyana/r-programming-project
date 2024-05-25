@@ -88,6 +88,7 @@ unique_occu
 
 # Function to fill blank occupations with the most frequent occupation 
 property_dataset <- property_dataset %>% mutate(Occupation = as.character(Occupation))
+property_dataset$Occupation[property_dataset$Occupation == "_______"] <- NA
 
 replace_with_mode_occu <- function(x) {
   mode_value_occu <- as.character(names(which.max(table(x))))
@@ -441,7 +442,7 @@ unique_credscore
 # Ong Zi Yang TP065229
 # Objective : To investigate the behaviour between credit score and annual income
 
-#Analysis 1 : Is there a correlation between a person's credit score as well as their annual income? // THIS TOOK AN HOUR AND A HALF TO DO WHY // Histogram
+#Analysis 1 : Does a person's credit score have an impact on their annual income? // THIS TOOK AN HOUR AND A HALF TO DO WHY // Histogram
 
 # determine min max values to determine logical range for a chart
 min_income_val <- min(property_dataset$Annual_Income)
@@ -496,28 +497,20 @@ ggplot(poor_data, aes(x = cut(Annual_Income, breaks = breaks))) +
   scale_y_continuous(labels = seq(0, 100000, by = 20000),
                      breaks = seq(0, 100000, by = 20000),
                      expand = c(0, 400)) +  # Remove space around the axis
-  labs(x = "Annual Income Range", y = "Frequency", title = "Distribution of Good Credit Scores by Annual Income") +
+  labs(x = "Annual Income Range", y = "Frequency", title = "Distribution of Poor Credit Scores by Annual Income") +
   theme_minimal()
 
-#Analysis 2 : Does the occupation of an individual affect their annual income? // Histogram
-unique_occu <- unique(property_dataset$Occupation)
-unique_occu
+#Analysis 2 : Does the occupation of an individual affect their EMI? // Histogram
 
-# find da average annual income for the chart
-avg_annl_income <- property_dataset %>%
-  group_by(property_dataset$Occupation) %>%
-  summarize(Avg_Annual_Income = round(mean(Annual_Income, na.rm = TRUE)))
-avg_annl_income
-
-
-ggplot(avg_annl_income, aes(x = unique_occu, y = Avg_Annual_Income)) +
-  geom_bar(stat = "identity", fill = "steelblue") +
-  geom_text(aes(label = Avg_Annual_Income), vjust = -0.5, color = "black") +
-  theme_minimal() +
-  labs(title = "Average Annual Income by Occupation", x = "Occupation", y = "Average Annual Income")
+ggplot(property_dataset, aes(x = Occupation, y = Total_EMI_per_month, color = Occupation)) +
+  geom_point(position = position_jitter(width = 0.2, height = 0)) +
+  labs(title = "Total EMI per Month vs. Occupation",
+       x = "Occupation",
+       y = "Total EMI/ Month") +
+  theme_minimal()
 
 
-#Analysis 3 : Is there a correlation between an individual's payment behaviour and their credit score? // Histogram
+#Analysis 3 : Does an individual's payment behaviour affect their credit score? // Histogram
 unique_paymentbhv <- unique(property_dataset$Payment_Behaviour)
 unique_paymentbhv
 
