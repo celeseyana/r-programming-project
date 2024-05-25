@@ -500,12 +500,12 @@ ggplot(poor_data, aes(x = cut(Annual_Income, breaks = breaks))) +
   labs(x = "Annual Income Range", y = "Frequency", title = "Distribution of Poor Credit Scores by Annual Income") +
   theme_minimal()
 
-#Analysis 2 : Does the occupation of an individual affect their EMI? // Jitter Plot
+#Analysis 2 : Does the credit score of an individual affect their EMI? // Jitter Plot
 
-ggplot(property_dataset, aes(x = Occupation, y = Total_EMI_per_month, color = Occupation)) +
+ggplot(property_dataset, aes(x = Credit_Score, y = Total_EMI_per_month, color = Credit_Score)) +
   geom_point(position = position_jitter(width = 0.2, height = 0)) +
-  labs(title = "Total EMI per Month vs. Occupation",
-       x = "Occupation",
+  labs(title = "Total EMI per Month vs. Credit Score",
+       x = "Credit Score",
        y = "Total EMI/ Month") +
   theme_minimal()
 
