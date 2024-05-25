@@ -310,10 +310,17 @@ property_dataset <- property_dataset %>%
 
 
 # Outstanding Debt Cleaning
+unique_od <- unique(property_dataset$Outstanding_Debt)
+unique_od_sort <- sort(unique_od, decreasing = FALSE)
+unique_od_sort
+
 property_dataset$Outstanding_Debt <- gsub("_", "", property_dataset$Outstanding_Debt)
 
 # Credit Utilization Ratio
 property_dataset$Credit_Utilization_Ratio <- round(property_dataset$Credit_Utilization_Ratio, 2)
+unq_cur <- unique(property_dataset$Credit_Utilization_Ratio)
+unq_cur_sorted <- sort(unq_cur, decreasing = FALSE)
+unq_cur_sorted
 
 
 # Credit History Age cleaning (idk SOMEONE DO THIS)
