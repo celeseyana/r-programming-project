@@ -726,7 +726,9 @@ data_freq <- property_dataset %>%
   group_by(Num_Bank_Accounts,Num_of_Loan) %>%
   summarise(freq = n()) %>%
   ungroup()
+
 data_freq
+
 # Create a bubble chart
 ggplot(data_freq, aes(x =Num_Bank_Accounts, y = Num_of_Loan, size = freq)) +
   geom_point(alpha = 0.5) +
@@ -737,12 +739,33 @@ ggplot(data_freq, aes(x =Num_Bank_Accounts, y = Num_of_Loan, size = freq)) +
   theme_minimal()
 
 #Analysis 3 : is there a relationship between a customers' credit score and their account payment behaviour
+# Create a contingency table
+contingency_table <- table(property_dataset$Credit_Score, property_dataset$Payment_Behaviour)
+
+# Perform Chi-Square Test of Independence
+chi_square_test <- chisq.test(contingency_table)
+
+# Print the results
+print(chi_square_test)
+
+# Create a facet grid plot
+ggplot(property_dataset, aes(x = Payment_Behaviour, fill = Payment_Behaviour)) +
+  geom_bar() +
+  facet_grid(. ~ Credit_Score) +
+  labs(title = "Facet Grid of Payment Behaviour by Credit Score",
+       x = "Payment Behaviour",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 #Analysis 4 : does the number of bank accounts customers' affect interest rate
 
+
 # Extra Analysis 1 : is there a relationship between a customer's credit score and their change credit limit?
 
+
 # Extra Analysis 2 : is there a relationship between a customer's credit score and their Outstanding Debt?
+
 
 #=============================================
 
