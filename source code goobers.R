@@ -623,19 +623,17 @@ legend("topright", legend = c("Min", "Max", "Avg"),
 #Analysis 2 : Does the number of loans a customer have affect their interest rate?
 property_dataset$Num_of_Loan <- as.numeric(property_dataset$Num_of_Loan)
 
-# Create data
-
-
 library(ggplot2)
 
 # Create the scatter plot
-ggplot(property_data, aes(x = Loans, y = rate)) +
+ggplot(data_clean, aes(x = data_clean$Loans, y = data_clean$rate)) +
   geom_point(color = "blue", alpha = 0.6) + # Points with some transparency
   labs(title = "Scatter Plot of Number of Loans vs. Interest Rate",
        x = "Number of Loans",
        y = "Interest Rate") +
   theme_minimal() +
   geom_smooth(method = "lm", col = "red") # Adding a trend line
+
 
 # Check for NA values in the columns
 sum(is.na(data$Loans))
@@ -645,35 +643,73 @@ sum(is.na(data$rate))
 data_clean <- na.omit(data)
 
 
+# Extra Feature 1 
+
 # Calculate the correlation coefficient after removing NA values
 correlation <- cor(data_clean$Loans, data_clean$rate)
 print(paste("Pearson correlation coefficient: ", round(correlation, 2)))
 
-# Fit the linear model
-model <- lm(rate ~ Loans, data = data_clean)
-
-# Summarize the model
-summary(model)
-
-# Plot the residuals
-ggplot(model, aes(.fitted, .resid)) +
-  geom_point() +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  labs(title = "Residuals vs Fitted Values",
-       x = "Fitted Values",
-       y = "Residuals") +
-  theme_minimal()
-
-#What is this code bro - ong zi yang
-
-#Analysis 3 : is there a relationship between a customer's credit score and their payment behaviour?
+# 0.54 is Moderate Positive Correlation 
 
 
+#Analysis 3 : Does occupation affect interest rate?
 
+# Extract the unique strings from the specified column
+unique_strings <- unique(property_dataset[["Occupation"]])
+unique_strings
+
+# detailed histogram of each occupation's interest rate
+ggplot(property_dataset, aes(x = Interest_Rate)) +
+  geom_histogram(binwidth = 1, fill = "skyblue", color = "black") +
+  labs(title = "Histogram of Interest Rate by Occupation",
+       x = "Interest Rate",
+       y = "Count") +
+  theme_minimal() +
+  facet_wrap(~ Occupation, scales = "free_y")
+
+# extra feature 2
+# bar plot with error bars
+library(dplyr)
+
+# Calculate mean and standard error
+data_summary <- property_dataset %>%
+  group_by(Occupation) %>%
+  summarise(mean_rate = mean(Interest_Rate, na.rm = TRUE),
+            se_rate = sd(Interest_Rate, na.rm = TRUE) / sqrt(n()))
+
+data_summary
+
+ggplot(data_summary, aes(x = Occupation, y = mean_rate)) +
+  geom_bar(stat = "identity", fill = "coral") +
+  geom_errorbar(aes(ymin = mean_rate - se_rate, ymax = mean_rate + se_rate), width = 0.2) +
+  labs(title = "Bar Plot of Mean Interest Rate by Occupation",
+       x = "Occupation",
+       y = "Mean Interest Rate") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Performing ANOVA
+anova_result <- aov(Interest_Rate ~ Occupation, data = property_dataset)
+summary(anova_result)
+
+# Performing Tukey's HSD test if ANOVA is significant
+if (summary(anova_result)[[1]]$`Pr(>F)`[1] < 0.05) {
+  tukey_result <- TukeyHSD(anova_result)
+  print(tukey_result)
+}
+
+# Plotting Tukey HSD results
+plot(TukeyHSD(anova_result), las = 1)
 
 
 #Analysis 4 : Does the number of delayed payment affect a customer's interest rate?
 
+ggplot(property_dataset, aes(x = factor(Num_of_Delayed_Payment), y = Interest_Rate)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Boxplot of Interest Rate by Number of Delayed Payments",
+       x = "Number of Delayed Payments",
+       y = "Interest Rate") +
+  theme_minimal() 
 
 #=============================================
 
