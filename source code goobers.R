@@ -146,6 +146,8 @@ bank_check
 
 # Bank Account Value cleaning
 property_dataset <- property_dataset %>% mutate(Num_Bank_Accounts = as.numeric(Num_Bank_Accounts))
+property_dataset$Num_Bank_Accounts <- gsub("-", "", property_dataset$Num_Bank_Accounts)
+property_dataset
 
 replace_with_mode_bankaccs <- function(x) {
   mode_value_bankaccs <- as.numeric(names(which.max(table(x))))
@@ -216,9 +218,9 @@ replace_with_mode_loannum <- function(x) {
 
 property_dataset <- property_dataset %>%
   group_by(Customer_ID) %>%
-  mutate(Num_of_Loan = replace_with_mode_loannum(Num_of_Loan)) %>%
-  ungroup() %>%
-  mutate(Num_of_Loan = ifelse(Num_of_Loan == 0, "null", Num_of_Loan))
+  mutate(Num_of_Loan = replace_with_mode_loannum(Num_of_Loan)) 
+  #ungroup() %>%
+  #mutate(Num_of_Loan = ifelse(Num_of_Loan == 0, "null", Num_of_Loan))
 
 # type of loan cleaning
 loantype_check <- unique(property_dataset$Type_of_Loan)
@@ -627,7 +629,7 @@ property_dataset$Num_of_Loan <- as.numeric(property_dataset$Num_of_Loan)
 library(ggplot2)
 
 # Create the scatter plot
-ggplot(data, aes(x = Loans, y = rate)) +
+ggplot(property_data, aes(x = Loans, y = rate)) +
   geom_point(color = "blue", alpha = 0.6) + # Points with some transparency
   labs(title = "Scatter Plot of Number of Loans vs. Interest Rate",
        x = "Number of Loans",
@@ -661,6 +663,8 @@ ggplot(model, aes(.fitted, .resid)) +
        x = "Fitted Values",
        y = "Residuals") +
   theme_minimal()
+
+#What is this code bro - ong zi yang
 
 #Analysis 3 : is there a relationship between a customer's credit score and their payment behaviour?
 
@@ -697,9 +701,40 @@ ggplot(model, aes(.fitted, .resid)) +
 # Wong Wei Hann TP065820
 # Objective : To investigate the behaviour between credit score and number of bank accounts
 
-#Analysis 1 : is there a relationship between the customers' credit score and the number of bank acounts they hold?
+#Analysis 1 : is there a relationship between the customers' credit score and the number of bank accounts they hold? / Stacked Bar Chart
 
-#Analysis 2 : does the type of loan accounts affect a customers' credit score?
+# Convert Credit_Score to factor to maintain the order
+property_dataset$Credit_Score <- factor(property_dataset$Credit_Score, levels = c("Poor", "Standard", "Good"))
+
+# Create a count table for the plot
+count_table <- property_dataset %>%
+  group_by(Credit_Score, Num_Bank_Accounts) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+# Plotting the stacked bar chart
+ggplot(count_table, aes(x = Credit_Score, y = count, fill = factor(Num_Bank_Accounts))) +
+  geom_bar(stat = "identity") +
+  labs(title = "Stacked Bar Chart of Credit Score and Number of Bank Accounts",
+       x = "Credit Score",
+       y = "Frequency",
+       fill = "Number of Bank Accounts") +
+  theme_minimal()
+
+#Analysis 2 : does the number of bank accounts correlate with the number of loans? / Bubble Plot
+data_freq <- property_dataset %>%
+  group_by(Num_Bank_Accounts,Num_of_Loan) %>%
+  summarise(freq = n()) %>%
+  ungroup()
+data_freq
+# Create a bubble chart
+ggplot(data_freq, aes(x =Num_Bank_Accounts, y = Num_of_Loan, size = freq)) +
+  geom_point(alpha = 0.5) +
+  labs(title = "Bubble Chart of Number of Bank Accounts vs. Number of Loans",
+       x = "Number of Bank Accounts",
+       y = "Number of Loans",
+       size = "Frequency") +
+  theme_minimal()
 
 #Analysis 3 : is there a relationship between a customers' credit score and their account payment behaviour
 
