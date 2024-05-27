@@ -795,14 +795,31 @@ ggplot(property_dataset, aes(x = Payment_Behaviour, fill = Payment_Behaviour)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 #Analysis 4 : does the number of bank accounts customers' affect interest rate
-
+# Create a violin plot
+ggplot(property_dataset, aes(x = factor(Num_Bank_Accounts), y = Interest_Rate)) +
+  geom_violin() +
+  labs(title = "Violin Plot of Number of Bank Accounts vs. Interest Rate",
+       x = "Number of Bank Accounts",
+       y = "Interest Rate") +
+  theme_minimal()
 
 # Extra Analysis 1 : is there a relationship between a customer's credit score and their change credit limit?
+# Create a box plot
+ggplot(property_dataset, aes(x = Credit_Score, y = Changed_Credit_Limit)) +
+  geom_boxplot() +
+  labs(title = "Box Plot of Credit Score and Changed Credit Limit",
+       x = "Credit Score",
+       y = "Changed Credit Limit") +
+  theme_minimal()
 
-
-# Extra Analysis 2 : is there a relationship between a customer's credit score and their Outstanding Debt?
-
-
+# Extra Analysis 2 : is there a relationship between a customer's credit score and number of delayed payments?
+# Create a density plot
+ggplot(property_dataset, aes(x = Num_of_Delayed_Payment, fill = Credit_Score)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Density Plot of Number of Delayed Payments by Credit Score",
+       x = "Number of Delayed Payments",
+       y = "Density") +
+  theme_minimal()
 #=============================================
 
 
