@@ -612,13 +612,15 @@ bar_data <- matrix(c(good_min, poor_min, standard_min,
                      good_max, poor_max, standard_max,
                      good_avg, poor_avg, standard_avg),
                    nrow = 3, byrow = TRUE)
-barplot(bar_data, beside = TRUE, col = c("blue", "red", "green"),
+bp <- barplot(bar_data, beside = TRUE, col = c("blue", "red", "green"),
         ylim = c(0, max(bar_data) + 10),
         names.arg = c("Good Score", "Poor Score", "Standard Score"),
         main = "Interest Rate Bar Chart",
         xlab = "Type of Credit Score", ylab = "Interest Rate")
 legend("topright", legend = c("Min", "Max", "Avg"),
        fill = c("blue", "red", "green"))
+text(x = bp, y = bar_data, label = round(bar_data, 2), pos = 3, cex = 0.8, col = "black")
+
 
 #Analysis 2 : Does the number of loans a customer have affect their interest rate?
 property_dataset$Num_of_Loan <- as.numeric(property_dataset$Num_of_Loan)
@@ -631,17 +633,15 @@ ggplot(data_clean, aes(x = factor(Loans), y = rate)) +
   labs(title = "Box Plot of Interest Rate by Number of Loans",
        x = "Number of Loans",
        y = "Interest Rate") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-# Adding a trend line
+  theme_minimal()
 
 # Ensure there are no NA values when calculating the maximum
 max_loans <- max(data_clean$Loans, na.rm = TRUE)
+max_rates <- max(data_clean$rate, na.rm = TRUE)
+
 
 # Print the result
 print(max_loans)
-
-
 
 # Check for NA values in the columns
 sum(is.na(data$Loans))
@@ -649,16 +649,6 @@ sum(is.na(data$rate))
 
 # Remove rows with NA values
 data_clean <- na.omit(data)
-
-
-# Extra Feature 1 
-
-# Calculate the correlation coefficient after removing NA values
-correlation <- cor(data_clean$Loans, data_clean$rate)
-print(paste("Pearson correlation coefficient: ", round(correlation, 2)))
-
-# 0.54 is Moderate Positive Correlation 
-
 
 #Analysis 3 : Does occupation affect interest rate?
 
@@ -674,27 +664,6 @@ ggplot(property_dataset, aes(x = Interest_Rate)) +
        y = "Count") +
   theme_minimal() +
   facet_wrap(~ Occupation, scales = "free_y")
-
-# extra feature 2
-# bar plot with error bars
-library(dplyr)
-
-# Calculate mean and standard error
-data_summary <- property_dataset %>%
-  group_by(Occupation) %>%
-  summarise(mean_rate = mean(Interest_Rate, na.rm = TRUE),
-            se_rate = sd(Interest_Rate, na.rm = TRUE) / sqrt(n()))
-
-data_summary
-
-ggplot(data_summary, aes(x = Occupation, y = mean_rate)) +
-  geom_bar(stat = "identity", fill = "coral") +
-  geom_errorbar(aes(ymin = mean_rate - se_rate, ymax = mean_rate + se_rate), width = 0.2) +
-  labs(title = "Bar Plot of Mean Interest Rate by Occupation",
-       x = "Occupation",
-       y = "Mean Interest Rate") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # Performing ANOVA
 anova_result <- aov(Interest_Rate ~ Occupation, data = property_dataset)
@@ -717,7 +686,34 @@ ggplot(property_dataset, aes(x = factor(Num_of_Delayed_Payment), y = Interest_Ra
   labs(title = "Boxplot of Interest Rate by Number of Delayed Payments",
        x = "Number of Delayed Payments",
        y = "Interest Rate") +
-  theme_minimal() 
+  theme_minimal()
+
+# Extra Feature 1 
+
+# Calculate the correlation coefficient after removing NA values
+correlation <- cor(data_clean$Loans, data_clean$rate)
+print(paste("Pearson correlation coefficient: ", round(correlation, 2)))
+
+# extra feature 2
+# bar plot with error bars
+library(dplyr)
+
+# Calculate mean and standard error
+data_summary <- property_dataset %>%
+  group_by(Occupation) %>%
+  summarise(mean_rate = mean(Interest_Rate, na.rm = TRUE),
+            se_rate = sd(Interest_Rate, na.rm = TRUE) / sqrt(n()))
+
+data_summary
+
+ggplot(data_summary, aes(x = Occupation, y = mean_rate)) +
+  geom_bar(stat = "identity", fill = "coral") +
+  geom_errorbar(aes(ymin = mean_rate - se_rate, ymax = mean_rate + se_rate), width = 0.2) +
+  labs(title = "Bar Plot of Mean Interest Rate by Occupation",
+       x = "Occupation",
+       y = "Mean Interest Rate") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 #=============================================
 
