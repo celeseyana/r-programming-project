@@ -759,20 +759,28 @@ ggplot(count_table, aes(x = Credit_Score, y = count, fill = factor(Num_Bank_Acco
 
 #Analysis 2 : does the number of bank accounts correlate with the number of loans? / Bubble Plot
 data_freq <- property_dataset %>%
-  group_by(Num_Bank_Accounts,Num_of_Loan) %>%
+  group_by(Num_Bank_Accounts, Num_of_Loan) %>%
   summarise(freq = n()) %>%
   ungroup()
 
-data_freq
-
 # Create a bubble chart
-ggplot(data_freq, aes(x =Num_Bank_Accounts, y = Num_of_Loan, size = freq)) +
-  geom_point(alpha = 0.5) +
+ggplot(data_freq, aes(x = Num_Bank_Accounts, y = Num_of_Loan, size = freq)) +
+  geom_point(alpha = 0.7, color = "blue", fill = "lightblue", shape = 21, stroke = 1) +
+  scale_size_continuous(range = c(3, 15)) +  # Adjust the size range
   labs(title = "Bubble Chart of Number of Bank Accounts vs. Number of Loans",
        x = "Number of Bank Accounts",
        y = "Number of Loans",
        size = "Frequency") +
-  theme_minimal()
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    axis.title.x = element_text(face = "bold", size = 14),
+    axis.title.y = element_text(face = "bold", size = 14),
+    axis.text = element_text(size = 12),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 10)
+  ) +
+  geom_text(aes(label = freq), vjust = -1, color = "black", size = 4)
 
 #Analysis 3 : is there a relationship between a customers' credit score and their account payment behaviour
 # Create a contingency table
