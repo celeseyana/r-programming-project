@@ -625,14 +625,22 @@ property_dataset$Num_of_Loan <- as.numeric(property_dataset$Num_of_Loan)
 
 library(ggplot2)
 
-# Create the scatter plot
-ggplot(data_clean, aes(x = data_clean$Loans, y = data_clean$rate)) +
-  geom_point(color = "blue", alpha = 0.6) + # Points with some transparency
-  labs(title = "Scatter Plot of Number of Loans vs. Interest Rate",
+
+ggplot(data_clean, aes(x = factor(Loans), y = rate)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Box Plot of Interest Rate by Number of Loans",
        x = "Number of Loans",
        y = "Interest Rate") +
   theme_minimal() +
-  geom_smooth(method = "lm", col = "red") # Adding a trend line
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# Adding a trend line
+
+# Ensure there are no NA values when calculating the maximum
+max_loans <- max(data_clean$Loans, na.rm = TRUE)
+
+# Print the result
+print(max_loans)
+
 
 
 # Check for NA values in the columns
