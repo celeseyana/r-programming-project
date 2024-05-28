@@ -788,7 +788,7 @@ ggplot(data_freq, aes(x = Num_Bank_Accounts, y = Num_of_Loan, size = freq)) +
     legend.title = element_text(face = "bold", size = 12),
     legend.text = element_text(size = 10)
   ) +
-  geom_text(aes(label = freq), vjust = -1, color = "black", size = 4)
+  geom_text(aes(label = freq), vjust = -2, color = "black", size = 4)
 
 #Analysis 3 : is there a relationship between a customers' credit score and their account payment behaviour
 # Create a contingency table
@@ -812,21 +812,35 @@ ggplot(property_dataset, aes(x = Payment_Behaviour, fill = Payment_Behaviour)) +
 
 #Analysis 4 : does the number of bank accounts customers' affect interest rate
 # Create a violin plot
-ggplot(property_dataset, aes(x = factor(Num_Bank_Accounts), y = Interest_Rate)) +
-  geom_violin() +
-  labs(title = "Violin Plot of Number of Bank Accounts vs. Interest Rate",
-       x = "Number of Bank Accounts",
-       y = "Interest Rate") +
+library(ggridges)
+
+ggplot(property_dataset, aes(x = Interest_Rate, y = factor(Num_Bank_Accounts), fill = factor(Num_Bank_Accounts))) +
+  geom_density_ridges(alpha = 0.7) +
+  labs(title = "Ridgeline Plot of Interest Rate by Number of Bank Accounts",
+       x = "Interest Rate",
+       y = "Number of Bank Accounts") +
   theme_minimal()
 
 # Extra Analysis 1 : is there a relationship between a customer's credit score and their change credit limit?
-# Create a box plot
-ggplot(property_dataset, aes(x = Credit_Score, y = Changed_Credit_Limit)) +
-  geom_boxplot() +
+# Create an enhanced box plot
+ggplot(property_dataset, aes(x = Credit_Score, y = Changed_Credit_Limit, fill = factor(Credit_Score))) +
+  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
+  scale_fill_brewer(palette = "Set3") +  # Use a color palette
   labs(title = "Box Plot of Credit Score and Changed Credit Limit",
        x = "Credit Score",
-       y = "Changed Credit Limit") +
-  theme_minimal()
+       y = "Changed Credit Limit",
+       fill = "Credit Score") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    axis.title.x = element_text(face = "bold", size = 14),
+    axis.title.y = element_text(face = "bold", size = 14),
+    axis.text = element_text(size = 12),
+    legend.title = element_text(face = "bold", size = 12),
+    legend.text = element_text(size = 10),
+    panel.grid.major = element_line(color = "gray", size = 0.5),
+    panel.grid.minor = element_line(color = "gray", size = 0.25)
+  )
 
 # Extra Analysis 2 : is there a relationship between a customer's credit score and number of delayed payments?
 # Create a density plot
