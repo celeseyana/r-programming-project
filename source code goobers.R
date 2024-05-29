@@ -742,7 +742,7 @@ ggplot(data_summary, aes(x = Occupation, y = mean_rate)) +
 # Objective : To investigate the behaviour between credit score and number of bank accounts
 
 #Analysis 1 : is there a relationship between the customers' credit score and the number of bank accounts they hold? / Stacked Bar Chart
-
+# descriptive & Dianogstic
 # Convert Credit_Score to factor to maintain the order
 property_dataset$Credit_Score <- factor(property_dataset$Credit_Score, levels = c("Poor", "Standard", "Good"))
 
@@ -762,6 +762,8 @@ ggplot(count_table, aes(x = Credit_Score, y = count, fill = factor(Num_Bank_Acco
   theme_minimal()
 
 #Analysis 2 : does the number of bank accounts correlate with the number of loans? / Bubble Plot
+# descriptive & Dianogstic
+
 data_freq <- property_dataset %>%
   group_by(Num_Bank_Accounts, Num_of_Loan) %>%
   summarise(freq = n()) %>%
@@ -787,6 +789,8 @@ ggplot(data_freq, aes(x = Num_Bank_Accounts, y = Num_of_Loan, size = freq)) +
   geom_text(aes(label = freq), vjust = -2, color = "black", size = 4)
 
 #Analysis 3 : is there a relationship between a customers' credit score and their account payment behaviour
+# descriptive & Dianogstic
+
 # Create a contingency table
 contingency_table <- table(property_dataset$Credit_Score, property_dataset$Payment_Behaviour)
 
