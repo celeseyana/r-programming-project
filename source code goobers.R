@@ -822,25 +822,49 @@ ggplot(property_dataset, aes(x = Interest_Rate, y = factor(Num_Bank_Accounts), f
   theme_minimal()
 
 # Extra Analysis 1 : is there a relationship between a customer's credit score and their change credit limit?
-# Create an enhanced box plot
-ggplot(property_dataset, aes(x = Credit_Score, y = Changed_Credit_Limit, fill = factor(Credit_Score))) +
-  geom_boxplot(alpha = 0.7, outlier.shape = NA) +
-  scale_fill_brewer(palette = "Set3") +  # Use a color palette
-  labs(title = "Box Plot of Credit Score and Changed Credit Limit",
-       x = "Credit Score",
-       y = "Changed Credit Limit",
-       fill = "Credit Score") +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
-    axis.title.x = element_text(face = "bold", size = 14),
-    axis.title.y = element_text(face = "bold", size = 14),
-    axis.text = element_text(size = 12),
-    legend.title = element_text(face = "bold", size = 12),
-    legend.text = element_text(size = 10),
-    panel.grid.major = element_line(color = "gray", size = 0.5),
-    panel.grid.minor = element_line(color = "gray", size = 0.25)
-  )
+
+library(randomForest)
+
+# Train the Random Forest model
+set.seed(123) # For reproducibility
+rf_model <- randomForest(Changed_Credit_Limit ~ Credit_Score, data=dataset, ntree=500, mtry=2, importance=TRUE)
+
+# Print the model summary
+print(rf_model)
+
+# Plot the importance of variables
+importance(rf_model)
+varImpPlot(rf_model)
+
+# Make predictions
+predictions <- predict(rf_model, dataset)
+
+# Evaluate the model
+MAE <- mean(abs(predictions - dataset$Changed_Credit_Limit))
+MSE <- mean((predictions - dataset$Changed_Credit_Limit)^2)
+RMSE <- sqrt(MSE)
+
+cat("Mean Absolute Error:", MAE, "\n")
+cat("Mean Squared Error:", MSE, "\n")
+cat("Root Mean Squared Error:", RMSE, "\n")
+
+rf_model <- randomForest(Changed_Credit_Limit ~ Credit_Score, data=dataset, ntree=500, mtry=2, importance=TRUE)
+
+# Make predictions
+predictions <- predict(rf_model, dataset)
+dataset$Predicted_Change_Credit_Limit <- predictions
+
+# Define constraints
+max_change_limit <- 5000
+
+# Recommend changes based on constraints
+dataset <- dataset %>%
+  mutate(Recommended_Change_Credit_Limit = ifelse(Predicted_Change_Credit_Limit > max_change_limit, 
+                                                  max_change_limit, 
+                                                  Predicted_Change_Credit_Limit))
+
+# Evaluate recommendations
+summary(dataset$Recommended_Change_Credit_Limit)
 
 # Extra Analysis 2 : is there a relationship between a customer's credit score and number of delayed payments?
 # Create a density plot
