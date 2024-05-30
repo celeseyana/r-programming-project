@@ -542,6 +542,8 @@ ggplot(standard_data, aes(x = Payment_Behaviour)) +
 install.packages("caret")
 library(caret)
 
+# im the goat 
+
 property_dataset$Credit_Score <- factor(property_dataset$Credit_Score, levels = c("Poor", "Standard", "Good"))
 property_dataset$Credit_Utilization_Ratio <- as.numeric(property_dataset$Credit_Utilization_Ratio)
 
@@ -556,23 +558,18 @@ model <- lm(Credit_Utilization_Ratio ~ Credit_Score, data = training_data)
 
 summary(model)
 
-testing_data$Predicted_Credit_Utilization_Ratio <- predict(model, newdata = testing_data)
+predictions <- predict(model, newdata = testing_data)
 
-comparison <- data.frame(Actual = testing_data$Credit_Utilization_Ratio, 
-                         Predicted = testing_data$Predicted_Credit_Utilization_Ratio, 
-                         Credit_Score = testing_data$Credit_Score)
+comparison <- data.frame(Actual = testing_data$Credit_Utilization_Ratio, Predicted = predictions)
 head(comparison)
 
-ggplot(comparison, aes(x = Actual, y = Predicted, color = Credit_Score)) +
-  geom_point() +
+ggplot(comparison, aes(x = Actual, y = Predicted)) +
+  geom_point(color = "steelblue") +
   geom_abline(slope = 1, intercept = 0, color = "red") +
   labs(title = "Predicted vs Actual Credit Utilization Ratios",
        x = "Actual Credit Utilization Ratio",
        y = "Predicted Credit Utilization Ratio") +
-  theme_minimal() +
-  scale_color_manual(values = c("Poor" = "blue", "Standard" = "green", "Good" = "orange")) +
-  theme(legend.title = element_text(size = 10),
-        legend.text = element_text(size = 8))
+  theme_minimal()
 
 recommend_credit_score <- function(current_ratio, target_ratio, model) {
   coefficients <- coef(model)
@@ -827,29 +824,58 @@ ggplot(data_freq, aes(x = Num_Bank_Accounts, y = Num_of_Loan, size = freq)) +
   geom_text(aes(label = freq), vjust = -2, color = "black", size = 4)
 
 #Analysis 3 : is there a relationship between a customers' credit score and their account payment behaviour
-# descriptive & Dianogstic
+#Predictive & Prescriptive
 
-# Create a contingency table
-contingency_table <- table(property_dataset$Credit_Score, property_dataset$Payment_Behaviour)
+library(caret)
 
-# Perform Chi-Square Test of Independence
-chi_square_test <- chisq.test(contingency_table)
+# Convert variables to factors if necessary
+property_dataset$Credit_Score <- as.factor(property_dataset$Credit_Score)
+property_dataset$Payment_Behaviour <- as.factor(property_dataset$Payment_Behaviour)
 
-# Print the results
-print(chi_square_test)
+# Split the data into training and test sets
+set.seed(123)
+train_index <- createDataPartition(property_dataset$Payment_Behaviour, p = 0.8, list = FALSE)
+training_set <- property_dataset[train_index, ]
+test_set <- property_dataset[-train_index, ]
 
-# Create a facet grid plot
-ggplot(property_dataset, aes(x = Payment_Behaviour, fill = Payment_Behaviour)) +
-  geom_bar() +
-  facet_grid(. ~ Credit_Score) +
-  labs(title = "Facet Grid of Payment Behaviour by Credit Score",
-       x = "Payment Behaviour",
-       y = "Count") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+# Build the logistic regression model
+logistic_model <- glm(Payment_Behaviour ~ Credit_Score, data = training_set, family = binomial)
+
+# Summarize the model
+summary(logistic_model)
+
+# Make predictions on the test set
+predictions <- predict(logistic_model, test_set, type = "response")
+test_set$Predicted_Payment_Behaviour <- ifelse(predictions > 0.5, "Positive_Behaviour", "Negative_Behaviour")
+
+# Ensure both columns are factors with the same levels
+test_set$Predicted_Payment_Behaviour <- factor(test_set$Predicted_Payment_Behaviour, 
+                                               levels = levels(test_set$Payment_Behaviour))
+
+# Evaluate the model using confusion matrix
+conf_matrix <- confusionMatrix(test_set$Predicted_Payment_Behaviour, test_set$Payment_Behaviour)
+print(conf_matrix)
+
+# Define recommendation function
+recommendation <- function(credit_score, payment_behaviour) {
+  if (payment_behaviour == "Negative_Behaviour" && as.numeric(credit_score) < 650) {
+    return("Improve your payment behavior to boost your credit score above 650.")
+  } else if (payment_behaviour == "Negative_Behaviour") {
+    return("Ensure timely payments to maintain a good credit score.")
+  } else {
+    return("Keep up the good payment behavior to maintain or improve your credit score.")
+  }
+}
+
+# Apply recommendations
+property_dataset$Recommendation <- mapply(recommendation, property_dataset$Credit_Score, property_dataset$Payment_Behaviour)
+
+# Display a few recommendations
+head(property_dataset[, c("Credit_Score", "Payment_Behaviour", "Recommendation")])
+tail(property_dataset[, c("Credit_Score", "Payment_Behaviour", "Recommendation")])
 
 #Analysis 4 : does the number of bank accounts customers' affect interest rate
-# Create a violin plot
+
 library(ggridges)
 
 ggplot(property_dataset, aes(x = Interest_Rate, y = factor(Num_Bank_Accounts), fill = factor(Num_Bank_Accounts))) +
@@ -862,36 +888,33 @@ ggplot(property_dataset, aes(x = Interest_Rate, y = factor(Num_Bank_Accounts), f
 # Extra Analysis 1 : is there a relationship between a customer's credit score and their change credit limit?
 #Predictive Analysis
 
-# Load necessary libraries
+library(randomForest)
 
-library(nnet)
-library(caret)
-
+# Convert Credit_Score to factor if necessary
 property_dataset$Credit_Score <- as.factor(property_dataset$Credit_Score)
 
-#Create Training data and Test data
+# Split the data into training and test sets
 set.seed(123)
+split <- sample.split(property_dataset$Credit_Score, SplitRatio = 0.8)
+training_set <- subset(property_dataset, split == TRUE)
+test_set <- subset(property_dataset, split == FALSE)
 
-split = sample.split(property_dataset$Credit_Score, SplitRatio = 0.8)
-training_set = subset(property_dataset, split == TRUE)
-test_set = subset(property_dataset, split == FALSE)
+# Build the random forest model
+classifier_rf <- randomForest(Credit_Score ~ Changed_Credit_Limit, data = training_set)
 
-#Build the Model
-classifier <- nnet::multinom(Credit_Score ~ Changed_Credit_Limit, data = training_set)
-summary(classifier)
+# Summary of the model
+print(classifier_rf)
 
-#Make Predictions
-prediction <- classifier %>%
-  predict(test_set)
-head(prediction)
+# Make predictions
+prediction_rf <- predict(classifier_rf, test_set)
 
-#Prediction Accuracy
-mean(prediction == test_set$Credit_Score)
-confusionMatrix(prediction, test_set$Credit_Score)
+# Prediction Accuracy
+accuracy <- mean(prediction_rf == test_set$Credit_Score)
+cat("Prediction Accuracy:", accuracy, "\n")
 
-
-# Evaluate recommendations
-summary(property_dataset$Recommended_Change_Credit_Limit)
+# Confusion Matrix
+conf_matrix_rf <- confusionMatrix(prediction_rf, test_set$Credit_Score)
+print(conf_matrix_rf)
 
 # Extra Analysis 2 : is there a relationship between a customer's credit score and number of delayed payments?
 # Create a density plot
