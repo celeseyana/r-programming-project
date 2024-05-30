@@ -822,49 +822,38 @@ ggplot(property_dataset, aes(x = Interest_Rate, y = factor(Num_Bank_Accounts), f
   theme_minimal()
 
 # Extra Analysis 1 : is there a relationship between a customer's credit score and their change credit limit?
+#Predictive Analysis
 
-library(randomForest)
+# Load necessary libraries
 
-# Train the Random Forest model
-set.seed(123) # For reproducibility
-rf_model <- randomForest(Changed_Credit_Limit ~ Credit_Score, data=dataset, ntree=500, mtry=2, importance=TRUE)
+library(nnet)
+library(caret)
 
-# Print the model summary
-print(rf_model)
+property_dataset$Credit_Score <- as.factor(property_dataset$Credit_Score)
 
-# Plot the importance of variables
-importance(rf_model)
-varImpPlot(rf_model)
+#Create Training data and Test data
+set.seed(123)
 
-# Make predictions
-predictions <- predict(rf_model, dataset)
+split = sample.split(property_dataset$Credit_Score, SplitRatio = 0.8)
+training_set = subset(property_dataset, split == TRUE)
+test_set = subset(property_dataset, split == FALSE)
 
-# Evaluate the model
-MAE <- mean(abs(predictions - dataset$Changed_Credit_Limit))
-MSE <- mean((predictions - dataset$Changed_Credit_Limit)^2)
-RMSE <- sqrt(MSE)
+#Build the Model
+classifier <- nnet::multinom(Credit_Score ~ Changed_Credit_Limit, data = training_set)
+summary(classifier)
 
-cat("Mean Absolute Error:", MAE, "\n")
-cat("Mean Squared Error:", MSE, "\n")
-cat("Root Mean Squared Error:", RMSE, "\n")
+#Make Predictions
+prediction <- classifier %>%
+  predict(test_set)
+head(prediction)
 
-rf_model <- randomForest(Changed_Credit_Limit ~ Credit_Score, data=dataset, ntree=500, mtry=2, importance=TRUE)
+#Prediction Accuracy
+mean(prediction == test_set$Credit_Score)
+confusionMatrix(prediction, test_set$Credit_Score)
 
-# Make predictions
-predictions <- predict(rf_model, dataset)
-dataset$Predicted_Change_Credit_Limit <- predictions
-
-# Define constraints
-max_change_limit <- 5000
-
-# Recommend changes based on constraints
-dataset <- dataset %>%
-  mutate(Recommended_Change_Credit_Limit = ifelse(Predicted_Change_Credit_Limit > max_change_limit, 
-                                                  max_change_limit, 
-                                                  Predicted_Change_Credit_Limit))
 
 # Evaluate recommendations
-summary(dataset$Recommended_Change_Credit_Limit)
+summary(property_dataset$Recommended_Change_Credit_Limit)
 
 # Extra Analysis 2 : is there a relationship between a customer's credit score and number of delayed payments?
 # Create a density plot
