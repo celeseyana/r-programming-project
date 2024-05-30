@@ -720,12 +720,23 @@ plot(TukeyHSD(anova_result), las = 1)
 
 #Analysis 4 : Does the number of delayed payment affect a customer's interest rate?
 
-ggplot(property_dataset, aes(x = factor(Num_of_Delayed_Payment), y = Interest_Rate)) +
+ggplot(property_dataset, aes(x = factor(Num_of_Delayed_Payment), 
+                             y = Interest_Rate)) +
   geom_boxplot(fill = "lightblue") +
   labs(title = "Boxplot of Interest Rate by Number of Delayed Payments",
        x = "Number of Delayed Payments",
        y = "Interest Rate") +
   theme_minimal()
+
+max_interest_rate <- property_dataset %>%
+  filter(Num_of_Delayed_Payment == -2) %>%
+  pull(Interest_Rate) %>%
+  mean(na.rm = TRUE)
+
+max_interest_rate
+
+sum(is.na(property_dataset$Num_of_Delayed_Payment))
+sum(is.na(property_dataset$Interest_Rate))
 
 # Extra Feature 1 
 
