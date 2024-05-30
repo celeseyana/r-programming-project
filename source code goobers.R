@@ -844,56 +844,25 @@ ggplot(property_dataset, aes(x = Num_Bank_Accounts, y = Num_of_Loan)) +
   )
 
 #Analysis 3 : is there a relationship between a customers' credit score and their account payment behaviour
-#Predictive & Prescriptive
 
-library(caret)
+# Create a contingency table
+contingency_table <- table(property_dataset$Credit_Score, property_dataset$Payment_Behaviour)
 
-# Convert variables to factors if necessary
-property_dataset$Credit_Score <- as.factor(property_dataset$Credit_Score)
-property_dataset$Payment_Behaviour <- as.factor(property_dataset$Payment_Behaviour)
+# Perform Chi-Square Test of Independence
+chi_square_test <- chisq.test(contingency_table)
 
-# Split the data into training and test sets
-set.seed(123)
-train_index <- createDataPartition(property_dataset$Payment_Behaviour, p = 0.8, list = FALSE)
-training_set <- property_dataset[train_index, ]
-test_set <- property_dataset[-train_index, ]
+# Create a facet grid plot
+ggplot(property_dataset, aes(x = Payment_Behaviour, fill = Payment_Behaviour)) +
+  geom_bar() +
+  facet_grid(. ~ Credit_Score) +
+  labs(title = "Facet Grid of Payment Behaviour by Credit Score",
+       x = "Payment Behaviour",
+       y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
-# Build the logistic regression model
-logistic_model <- glm(Payment_Behaviour ~ Credit_Score, data = training_set, family = binomial)
-
-# Summarize the model
-summary(logistic_model)
-
-# Make predictions on the test set
-predictions <- predict(logistic_model, test_set, type = "response")
-test_set$Predicted_Payment_Behaviour <- ifelse(predictions > 0.5, "Positive_Behaviour", "Negative_Behaviour")
-
-# Ensure both columns are factors with the same levels
-test_set$Predicted_Payment_Behaviour <- factor(test_set$Predicted_Payment_Behaviour, 
-                                               levels = levels(test_set$Payment_Behaviour))
-
-# Evaluate the model using confusion matrix
-conf_matrix <- confusionMatrix(test_set$Predicted_Payment_Behaviour, test_set$Payment_Behaviour)
-print(conf_matrix)
-
-# Define recommendation function
-recommendation <- function(credit_score, payment_behaviour) {
-  if (payment_behaviour == "Negative_Behaviour" && as.numeric(credit_score) < 650) {
-    return("Improve your payment behavior to boost your credit score above 650.")
-  } else if (payment_behaviour == "Negative_Behaviour") {
-    return("Ensure timely payments to maintain a good credit score.")
-  } else {
-    return("Keep up the good payment behavior to maintain or improve your credit score.")
-  }
-}
-
-# Apply recommendations
-property_dataset$Recommendation <- mapply(recommendation, property_dataset$Credit_Score, property_dataset$Payment_Behaviour)
-
-# Display a few recommendations
-head(property_dataset[, c("Credit_Score", "Payment_Behaviour", "Recommendation")])
-tail(property_dataset[, c("Credit_Score", "Payment_Behaviour", "Recommendation")])
-
+# Print the results
+print(chi_square_test)
 #Analysis 4 : does the number of bank accounts customers' affect interest rate
 
 library(ggridges)
@@ -910,9 +879,6 @@ ggplot(property_dataset, aes(x = Interest_Rate, y = factor(Num_Bank_Accounts), f
 
 library(randomForest)
 library(caTools)
-
-# Convert Credit_Score to factor if necessary
-property_dataset$Credit_Score <- as.factor(property_dataset$Credit_Score)
 
 # Split the data into training and test sets
 set.seed(123)
