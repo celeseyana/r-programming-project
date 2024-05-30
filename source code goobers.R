@@ -27,7 +27,7 @@ library(readr)
 #=============================================
 # Importing Dataset
 
-property_dataset <- read.csv("C:\\Github\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
+property_dataset <- read.csv("D:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
 for (col in names(property_dataset)) {
   property_dataset[property_dataset == ""] <- NA
 }
@@ -539,14 +539,49 @@ ggplot(standard_data, aes(x = Payment_Behaviour)) +
 
 
 #Analysis 4 : Does an individual's credit utilization ratio have an effect on their credit score? // Jitter  Plot
+install.packages("caret")
+library(caret)
 
 # im the goat 
-ggplot(property_dataset, aes(x = Credit_Score, y = Credit_Utilization_Ratio, color = Credit_Score)) +
-  geom_point(position = position_jitter(width = 0.2, height = 0)) +
-  labs(title = "Credit Utilization Ratio vs. Credit Score",
-       x = "Credit Score",
-       y = "Credit Utilization Ratio") +
+
+property_dataset$Credit_Score <- factor(property_dataset$Credit_Score, levels = c("Poor", "Standard", "Good"))
+property_dataset$Credit_Utilization_Ratio <- as.numeric(property_dataset$Credit_Utilization_Ratio)
+
+clean_data <- na.omit(property_dataset[is.finite(property_dataset$Credit_Utilization_Ratio), ])
+
+set.seed(123)
+training_indices <- sample(seq_len(nrow(clean_data)), size = 0.7 * nrow(clean_data))
+training_data <- clean_data[training_indices, ]
+testing_data <- clean_data[-training_indices, ]
+
+model <- lm(Credit_Utilization_Ratio ~ Credit_Score, data = training_data)
+
+summary(model)
+
+predictions <- predict(model, newdata = testing_data)
+
+comparison <- data.frame(Actual = testing_data$Credit_Utilization_Ratio, Predicted = predictions)
+head(comparison)
+
+ggplot(comparison, aes(x = Actual, y = Predicted)) +
+  geom_point(color = "steelblue") +
+  geom_abline(slope = 1, intercept = 0, color = "red") +
+  labs(title = "Predicted vs Actual Credit Utilization Ratios",
+       x = "Actual Credit Utilization Ratio",
+       y = "Predicted Credit Utilization Ratio") +
   theme_minimal()
+
+recommend_credit_score <- function(current_ratio, target_ratio, model) {
+  coefficients <- coef(model)
+  required_change <- (target_ratio - coefficients[1]) / coefficients[2] - current_ratio
+  return(required_change)
+}
+
+current_ratio <- 0.3  # Example current credit utilization ratio
+target_ratio <- 0.1  # Example target credit utilization ratio
+required_change <- recommend_credit_score(current_ratio, target_ratio, model)
+
+cat("To achieve a credit utilization ratio of", target_ratio, "consider adjusting your credit score factors accordingly.\n")
 
 # Extra Analysis 1 : Relationship between Credit Score and Delay from due date of an individual // Violin Plot
 
