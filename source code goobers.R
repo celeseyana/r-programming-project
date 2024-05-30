@@ -542,8 +542,6 @@ ggplot(standard_data, aes(x = Payment_Behaviour)) +
 install.packages("caret")
 library(caret)
 
-# im the goat 
-
 property_dataset$Credit_Score <- factor(property_dataset$Credit_Score, levels = c("Poor", "Standard", "Good"))
 property_dataset$Credit_Utilization_Ratio <- as.numeric(property_dataset$Credit_Utilization_Ratio)
 
@@ -558,18 +556,23 @@ model <- lm(Credit_Utilization_Ratio ~ Credit_Score, data = training_data)
 
 summary(model)
 
-predictions <- predict(model, newdata = testing_data)
+testing_data$Predicted_Credit_Utilization_Ratio <- predict(model, newdata = testing_data)
 
-comparison <- data.frame(Actual = testing_data$Credit_Utilization_Ratio, Predicted = predictions)
+comparison <- data.frame(Actual = testing_data$Credit_Utilization_Ratio, 
+                         Predicted = testing_data$Predicted_Credit_Utilization_Ratio, 
+                         Credit_Score = testing_data$Credit_Score)
 head(comparison)
 
-ggplot(comparison, aes(x = Actual, y = Predicted)) +
-  geom_point(color = "steelblue") +
+ggplot(comparison, aes(x = Actual, y = Predicted, color = Credit_Score)) +
+  geom_point() +
   geom_abline(slope = 1, intercept = 0, color = "red") +
   labs(title = "Predicted vs Actual Credit Utilization Ratios",
        x = "Actual Credit Utilization Ratio",
        y = "Predicted Credit Utilization Ratio") +
-  theme_minimal()
+  theme_minimal() +
+  scale_color_manual(values = c("Poor" = "blue", "Standard" = "green", "Good" = "orange")) +
+  theme(legend.title = element_text(size = 10),
+        legend.text = element_text(size = 8))
 
 recommend_credit_score <- function(current_ratio, target_ratio, model) {
   coefficients <- coef(model)
@@ -582,6 +585,7 @@ target_ratio <- 0.1  # Example target credit utilization ratio
 required_change <- recommend_credit_score(current_ratio, target_ratio, model)
 
 cat("To achieve a credit utilization ratio of", target_ratio, "consider adjusting your credit score factors accordingly.\n")
+
 
 # Extra Analysis 1 : Relationship between Credit Score and Delay from due date of an individual // Violin Plot
 
