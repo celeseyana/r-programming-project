@@ -819,16 +819,9 @@ library(dplyr)
 library(ggplot2)
 library(car)
 
-# Ensure Num_Bank_Accounts and Num_of_Loan are factors if necessary
-property_dataset$Num_Bank_Accounts <- as.factor(property_dataset$Num_Bank_Accounts)
-property_dataset$Num_of_Loan <- as.numeric(property_dataset$Num_of_Loan)
-
 # Perform ANOVA
 anova_model <- aov(Num_of_Loan ~ Num_Bank_Accounts, data = property_dataset)
 summary(anova_model)
-
-# Check assumptions: homogeneity of variances
-leveneTest(Num_of_Loan ~ Num_Bank_Accounts, data = property_dataset)
 
 # Post-hoc analysis if ANOVA is significant
 if (summary(anova_model)[[1]][["Pr(>F)"]][1] < 0.05) {
