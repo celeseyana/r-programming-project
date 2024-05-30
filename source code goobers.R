@@ -27,7 +27,7 @@ library(readr)
 #=============================================
 # Importing Dataset
 
-property_dataset <- read.csv("D:\\Github\\data analysis module\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
+property_dataset <- read.csv("C:\\Github\\r-programming-project\\PFDAdataset.csv", na.strings = c(" ", "NA")) # ( !! edit based off your dataset location !! )
 for (col in names(property_dataset)) {
   property_dataset[property_dataset == ""] <- NA
 }
@@ -803,6 +803,7 @@ count_table <- property_dataset %>%
   ungroup()
 
 # Plotting the stacked bar chart
+
 ggplot(count_table, aes(x = Credit_Score, y = count, fill = factor(Num_Bank_Accounts))) +
   geom_bar(stat = "identity") +
   labs(title = "Stacked Bar Chart of Credit Score and Number of Bank Accounts",
@@ -811,32 +812,43 @@ ggplot(count_table, aes(x = Credit_Score, y = count, fill = factor(Num_Bank_Acco
        fill = "Number of Bank Accounts") +
   theme_minimal()
 
-#Analysis 2 : does the number of bank accounts correlate with the number of loans? / Bubble Plot
-# descriptive & Dianogstic
+#Analysis 2 : does the number of bank accounts correlate with the number of loans? 
 
-data_freq <- property_dataset %>%
-  group_by(Num_Bank_Accounts, Num_of_Loan) %>%
-  summarise(freq = n()) %>%
-  ungroup()
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(car)
 
-# Create a bubble chart
-ggplot(data_freq, aes(x = Num_Bank_Accounts, y = Num_of_Loan, size = freq)) +
-  geom_point(alpha = 0.7, color = "blue", fill = "lightblue", shape = 21, stroke = 1) +
-  scale_size_continuous(range = c(3, 15)) +  # Adjust the size range
-  labs(title = "Bubble Chart of Number of Bank Accounts vs. Number of Loans",
+# Ensure Num_Bank_Accounts and Num_of_Loan are factors if necessary
+property_dataset$Num_Bank_Accounts <- as.factor(property_dataset$Num_Bank_Accounts)
+property_dataset$Num_of_Loan <- as.numeric(property_dataset$Num_of_Loan)
+
+# Perform ANOVA
+anova_model <- aov(Num_of_Loan ~ Num_Bank_Accounts, data = property_dataset)
+summary(anova_model)
+
+# Check assumptions: homogeneity of variances
+leveneTest(Num_of_Loan ~ Num_Bank_Accounts, data = property_dataset)
+
+# Post-hoc analysis if ANOVA is significant
+if (summary(anova_model)[[1]][["Pr(>F)"]][1] < 0.05) {
+  tukey_results <- TukeyHSD(anova_model)
+  print(tukey_results)
+}
+
+# Visualize the ANOVA results using boxplots
+ggplot(property_dataset, aes(x = Num_Bank_Accounts, y = Num_of_Loan)) +
+  geom_boxplot(fill = "lightblue", color = "blue") +
+  labs(title = "Boxplot of Number of Loans by Number of Bank Accounts",
        x = "Number of Bank Accounts",
-       y = "Number of Loans",
-       size = "Frequency") +
+       y = "Number of Loans") +
   theme_minimal() +
   theme(
     plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
     axis.title.x = element_text(face = "bold", size = 14),
     axis.title.y = element_text(face = "bold", size = 14),
-    axis.text = element_text(size = 12),
-    legend.title = element_text(face = "bold", size = 12),
-    legend.text = element_text(size = 10)
-  ) +
-  geom_text(aes(label = freq), vjust = -2, color = "black", size = 4)
+    axis.text = element_text(size = 12)
+  )
 
 #Analysis 3 : is there a relationship between a customers' credit score and their account payment behaviour
 #Predictive & Prescriptive
@@ -904,6 +916,7 @@ ggplot(property_dataset, aes(x = Interest_Rate, y = factor(Num_Bank_Accounts), f
 #Predictive Analysis
 
 library(randomForest)
+library(caTools)
 
 # Convert Credit_Score to factor if necessary
 property_dataset$Credit_Score <- as.factor(property_dataset$Credit_Score)
