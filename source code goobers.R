@@ -791,6 +791,8 @@ ggplot(data_freq, aes(x = Num_Bank_Accounts, y = Num_of_Loan, size = freq)) +
 #Analysis 3 : is there a relationship between a customers' credit score and their account payment behaviour
 #Predictive & Prescriptive
 
+library(caret)
+
 # Convert variables to factors if necessary
 property_dataset$Credit_Score <- as.factor(property_dataset$Credit_Score)
 property_dataset$Payment_Behaviour <- as.factor(property_dataset$Payment_Behaviour)
@@ -838,7 +840,7 @@ head(property_dataset[, c("Credit_Score", "Payment_Behaviour", "Recommendation")
 tail(property_dataset[, c("Credit_Score", "Payment_Behaviour", "Recommendation")])
 
 #Analysis 4 : does the number of bank accounts customers' affect interest rate
-# Create a violin plot
+
 library(ggridges)
 
 ggplot(property_dataset, aes(x = Interest_Rate, y = factor(Num_Bank_Accounts), fill = factor(Num_Bank_Accounts))) +
@@ -851,36 +853,33 @@ ggplot(property_dataset, aes(x = Interest_Rate, y = factor(Num_Bank_Accounts), f
 # Extra Analysis 1 : is there a relationship between a customer's credit score and their change credit limit?
 #Predictive Analysis
 
-# Load necessary libraries
+library(randomForest)
 
-library(nnet)
-library(caret)
-
+# Convert Credit_Score to factor if necessary
 property_dataset$Credit_Score <- as.factor(property_dataset$Credit_Score)
 
-#Create Training data and Test data
+# Split the data into training and test sets
 set.seed(123)
+split <- sample.split(property_dataset$Credit_Score, SplitRatio = 0.8)
+training_set <- subset(property_dataset, split == TRUE)
+test_set <- subset(property_dataset, split == FALSE)
 
-split = sample.split(property_dataset$Credit_Score, SplitRatio = 0.8)
-training_set = subset(property_dataset, split == TRUE)
-test_set = subset(property_dataset, split == FALSE)
+# Build the random forest model
+classifier_rf <- randomForest(Credit_Score ~ Changed_Credit_Limit, data = training_set)
 
-#Build the Model
-classifier <- nnet::multinom(Credit_Score ~ Changed_Credit_Limit, data = training_set)
-summary(classifier)
+# Summary of the model
+print(classifier_rf)
 
-#Make Predictions
-prediction <- classifier %>%
-  predict(test_set)
-head(prediction)
+# Make predictions
+prediction_rf <- predict(classifier_rf, test_set)
 
-#Prediction Accuracy
-mean(prediction == test_set$Credit_Score)
-confusionMatrix(prediction, test_set$Credit_Score)
+# Prediction Accuracy
+accuracy <- mean(prediction_rf == test_set$Credit_Score)
+cat("Prediction Accuracy:", accuracy, "\n")
 
-
-# Evaluate recommendations
-summary(property_dataset$Recommended_Change_Credit_Limit)
+# Confusion Matrix
+conf_matrix_rf <- confusionMatrix(prediction_rf, test_set$Credit_Score)
+print(conf_matrix_rf)
 
 # Extra Analysis 2 : is there a relationship between a customer's credit score and number of delayed payments?
 # Create a density plot
