@@ -744,27 +744,6 @@ sum(is.na(property_dataset$Interest_Rate))
 correlation <- cor(data_clean$Loans, data_clean$rate)
 print(paste("Pearson correlation coefficient: ", round(correlation, 2)))
 
-# extra feature 2
-# bar plot with error bars
-library(dplyr)
-
-# Calculate mean and standard error
-data_summary <- property_dataset %>%
-  group_by(Occupation) %>%
-  summarise(mean_rate = mean(Interest_Rate, na.rm = TRUE),
-            se_rate = sd(Interest_Rate, na.rm = TRUE) / sqrt(n()))
-
-data_summary
-
-ggplot(data_summary, aes(x = Occupation, y = mean_rate)) +
-  geom_bar(stat = "identity", fill = "coral") +
-  geom_errorbar(aes(ymin = mean_rate - se_rate, ymax = mean_rate + se_rate), width = 0.2) +
-  labs(title = "Bar Plot of Mean Interest Rate by Occupation",
-       x = "Occupation",
-       y = "Mean Interest Rate") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
 #=============================================
 
 
