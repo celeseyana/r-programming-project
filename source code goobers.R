@@ -751,15 +751,143 @@ print(paste("Pearson correlation coefficient: ", round(correlation, 2)))
 #=============================================
 
 # Trilester Movees Tirilos TP066460
-# Objective : To investigate the behaviour between credit score and number of credit cards
+# Objective : To investigate the behaviour between credit score and number of credit cards  
+#Analysis 1 : Is there a relationship between the credit score and the number of credit cards they hold?
+ggplot(property_dataset, aes(x = as.factor(Num_Credit_Card), fill = Credit_Score)) +
+  geom_bar(position = "dodge") + 
+  labs(title = "Bar Plot of Credit Scores by Number of Credit Cards",
+       x = "Number of Credit Cards",
+       y = "Count") +
+  theme_minimal()
 
-#Analysis 1 :
+#Analysis 2 : Does the frequency of credit inquiries affect the credit score?
+# Count plot for Frequency of Credit Inquiries
+ggplot(property_dataset, aes(x = as.factor(Num_Credit_Inquiries))) +
+  geom_bar(fill = "blue") +
+  labs(title = "Count Plot of Credit Inquiries",
+       x = "Number of Credit Inquiries",
+       y = "Count") +
+  theme_minimal()
 
-#Analysis 2 :
+# Count plot for Credit Score
+ggplot(property_dataset, aes(x = Credit_Score)) +
+  geom_bar(fill = "blue") +
+  labs(title = "Count Plot of Credit Scores",
+       x = "Credit Score",
+       y = "Count") +
+  theme_minimal()
 
-#Analysis 3 :
 
-#Analysis 4 :
+# Analysis 3 : Does the number of credit cards affect the average utilization ratio?
+library(reshape2)
+library(ggplot2)
+
+# Aggregate data to count occurrences of each combination
+heatmap_data <- property_dataset %>%
+  group_by(Num_Credit_Card, Credit_Utilization_Ratio) %>%
+  summarise(count = n(), .groups = 'drop')
+
+# Create heatmap
+ggplot(heatmap_data, aes(x = factor(Num_Credit_Card), y = Credit_Utilization_Ratio, fill = count)) +
+  geom_tile() +
+  scale_fill_gradient(low = "green", high = "red") +
+  labs(title = "Heatmap of Credit Utilization Ratio by Number of Credit Cards",
+       x = "Number of Credit Cards",
+       y = "Credit Utilization Ratio",
+       fill = "Count") +
+  theme_minimal()
+
+#Analysis 4 : What changes can be made to improve credit scores?
+credit_score_improvement <- property_dataset %>%
+  group_by(Credit_Score) %>%
+  summarise(
+    avg_num_credit_cards = mean(Num_Credit_Card, na.rm = TRUE),
+    avg_num_loans = mean(Num_of_Loan, na.rm = TRUE),
+    avg_utilization_ratio = mean(Credit_Utilization_Ratio, na.rm = TRUE),
+    avg_delay_payments = mean(Num_of_Delayed_Payment, na.rm = TRUE)
+  )
+
+# Generate plot to show the relationship between credit scores and improvement factors
+# Factors: Num_Credit_Card, Num_of_Loan, Credit_Utilization_Ratio, Num_of_Delayed_Payment
+ggplot(property_dataset, aes(x = Credit_Score)) +
+  geom_boxplot(aes(y = Num_Credit_Card), fill = "blue", position = position_dodge(width = 0.8)) +
+  geom_boxplot(aes(y = Num_of_Loan), fill = "green", position = position_dodge(width = 0.8)) +
+  geom_boxplot(aes(y = Credit_Utilization_Ratio), fill = "red", position = position_dodge(width = 0.8)) +
+  geom_boxplot(aes(y = Num_of_Delayed_Payment), fill = "yellow", position = position_dodge(width = 0.8)) +
+  labs(title = "Factors Affecting Credit Scores",
+       x = "Credit Score",
+       y = "Value",
+       fill = "Factors") +
+  theme_minimal()
+
+# Analysis 5: Predicting Credit Scores based on Annual Income and Credit Utilization Ratio
+library(ggplot2)
+library(dplyr)
+
+# Ensure the data has no missing values 
+property_dataset <- na.omit(property_dataset[c("Credit_Score", "Annual_Income", "Credit_Utilization_Ratio")])
+property_dataset$Annual_Income <- as.numeric(property_dataset$Annual_Income)
+
+# Plot
+ggplot(property_dataset, aes(x = Annual_Income, y = Credit_Utilization_Ratio, color = Credit_Score)) +
+  geom_point(alpha = 0.6) +  
+  geom_smooth(method = "lm", se = FALSE, color = "red") +  
+  geom_rug(sides = "b", color = "black", alpha = 0.3) +  
+  labs(x = "Annual Income", y = "Credit Utilization Ratio",
+       title = "Distribution of Credit Scores with Annual Income and Credit Utilization Ratio",
+       color = "Credit Score") +  
+  theme_minimal()  
+credit_score_improvement <- property_dataset %>%
+  group_by(Credit_Utilization_Ratio, Num_Credit_Card) %>%
+  summarise(avg_credit_score = mean(Credit_Score, na.rm = TRUE))
+
+ggplot(credit_score_improvement, aes(x = Credit_Utilization_Ratio, y = Num_Credit_Card, fill = avg_credit_score)) +
+  geom_tile() +
+  scale_fill_gradient(low = "blue", high = "red") +
+  labs(title = "Improving Credit Scores by Managing Credit Utilization Ratio and Number of Credit Cards",
+       x = "Credit Utilization Ratio",
+       y = "Number of Credit Cards",
+       fill = "Average Credit Score") +
+  theme_minimal()
+
+# Extra feature 1
+# Heatmap
+library(reshape2)
+library(ggplot2)
+
+# Aggregate data to count occurrences of each combination
+heatmap_data <- property_dataset %>%
+  group_by(Num_Credit_Card, Credit_Utilization_Ratio) %>%
+  summarise(count = n(), .groups = 'drop')
+
+# Create the heatmap
+ggplot(heatmap_data, aes(x = factor(Num_Credit_Card), y = Credit_Utilization_Ratio, fill = count)) +
+  geom_tile() +
+  scale_fill_gradient(low = "green", high = "red") +
+  labs(title = "Heatmap of Credit Utilization Ratio by Number of Credit Cards",
+       x = "Number of Credit Cards",
+       y = "Credit Utilization Ratio",
+       fill = "Count") +
+  theme_minimal()
+
+# Extra feature 2
+# rug_plot
+library(ggplot2)
+library(dplyr)
+
+# Ensure the data has no missing values for the required variables
+property_dataset <- na.omit(property_dataset[c("Credit_Score", "Annual_Income", "Credit_Utilization_Ratio")])
+property_dataset$Annual_Income <- as.numeric(cleaned_data$Annual_Income)
+
+# Create the plot with geom_rug
+ggplot(property_dataset, aes(x = Annual_Income, y = Credit_Utilization_Ratio, color = Credit_Score)) +
+  geom_point(alpha = 0.6) +  # Add points with some transparency
+  geom_smooth(method = "lm", se = FALSE, color = "red") +  # Add regression line
+  geom_rug(sides = "b", color = "black", alpha = 0.3) +  # Add rug plot on x-axis (bottom)
+  labs(x = "Annual Income", y = "Credit Utilization Ratio",
+       title = "Distribution of Credit Scores with Annual Income and Credit Utilization Ratio",
+       color = "Credit Score") +  # Axis labels and plot title
+  theme_minimal()  # Apply minimal theme
 
 #=============================================
 
